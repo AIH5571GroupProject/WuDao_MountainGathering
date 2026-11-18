@@ -13,7 +13,7 @@ npm test
 npm run build
 ```
 
-本机持续预览可运行 `npm run review`，或双击 `start-preview.cmd`。出现 `WuDao is ready` 后打开终端给出的地址，预览窗口需保持运行。代码开发使用 dev 服务；验收预览会先打包，修改后需要重启。
+本机持续预览可运行 `npm run review`，或双击 `start-preview.cmd`。`start-preview.cmd` 只适用于 Windows；macOS 与 Linux 请直接运行 `npm run review`。出现 `WuDao is ready` 后打开终端给出的地址，预览窗口需保持运行。代码开发使用 dev 服务；验收预览会先打包，修改后需要重启。
 
 ## 当前体验
 
