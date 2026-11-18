@@ -1,0 +1,26 @@
+node_modules/
+dist/
+research/
+visuals/
+frames/
+*.tsbuildinfo
+*.log
+.workbuddy/
+.env*
+!.env.example
+demo/preview-process.txt
+review-dist/
+
+# Local references, captures, generated config and contributor authentication
+promptPicture/
+frames_contact_sheet.png
+frames_viewer.html
+render_frames.py
+vite.config.js
+vite.config.d.ts
+.workbuddy/
+demo/
+
+# Superseded local WingBrone bundles (the current index.html uses the other hash)
+public/experiences/wingbrone/assets/index-DvKje2eU.js
+public/experiences/wingbrone/assets/index-DjV53ful.css

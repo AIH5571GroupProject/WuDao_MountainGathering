@@ -1,0 +1,69 @@
+/* Budo paper, bamboo and timber. Functional text is rendered above decoration. */
+:root {
+  --display: 'Noto Serif SC', 'Songti SC', 'SimSun', Georgia, serif;
+  --body: 'Microsoft YaHei', sans-serif;
+  --data: Georgia, 'Microsoft YaHei', serif;
+  --wood: #d8c3a2;
+  --wood-soft: #e0ceb4;
+  --wood-deep: #63482e;
+  --wood-hover: #4e3926;
+  --on-wood: #fff5e4;
+  --muted: #52634b;
+}
+.vignette {
+  background: radial-gradient(ellipse at center, transparent 45%, #e9ecdf99);
+}
+button, .primary, .result-actions a { font-weight: 400; }
+button:focus-visible, a:focus-visible { outline: 2px solid #394c39; }
+.crt-texture { opacity: .35; }
+.theme-crt .mode .selected {
+  background: var(--wood-soft);
+  border-color: #806141;
+  color: #443522;
+}
+.theme-crt .mode .selected .control-code { color: #55412e; }
+.theme-crt .mode button:hover,
+.theme-crt .mode button:hover .control-code {
+  background: var(--wood-deep);
+  color: var(--on-wood);
+}
+.theme-crt .primary *, .theme-crt .primary:hover * { color: inherit; }
+.theme-crt .panel button.primary { clip-path: none; }
+/* Put decorative slabs behind their content instead of across the text column. */
+.theme-crt.state-home::before {
+  left: auto;
+  right: -3vw;
+  bottom: -4vh;
+  width: 15vw;
+  height: 14vh;
+  transform: skewX(-18deg);
+  z-index: 1;
+  opacity: .36;
+}
+.theme-crt .pause-screen::after { z-index: 0; opacity: .27; width: 13%; }
+.theme-crt .panel, .theme-crt .result-heading, .theme-crt .postcard,
+.theme-crt .result-actions { z-index: 2; }
+.theme-crt .chapter-word { z-index: 0; opacity: .045; }
+.theme-crt .panel { background: #e9ecdf; padding: 28px 16px 14px; }
+.theme-crt .result-heading { background: #e9ecdf; padding: 24px 16px 14px; }
+.theme-crt .result-heading :is(p, .panel-note),
+.theme-crt .panel :is(p, .panel-note) { color: #52634b; }
+.theme-crt .poster-title { clip-path: none; padding-top: 18px; }
+.theme-crt .intro { padding-bottom: 28px; }
+.theme-crt.state-home { overflow-y: auto; }
+.theme-crt .intro .status { color: #394c39; }
+.theme-crt .intro small { color: #394c39; }
+.theme-crt .archive-label { background: #e0ceb4; color: #443522; border-color: #806141; }
+.theme-crt .result-actions { background: #e9ecdf; padding: 22px 16px 12px; }
+.theme-crt .result-stats dd small {
+  background: none;
+  -webkit-text-fill-color: #394c39;
+  color: #394c39;
+  -webkit-text-stroke: 0;
+}
+.theme-crt .overlay .chapter-word { pointer-events: none; }
+@media (max-width: 760px) {
+  .theme-crt .intro { padding-bottom: 38px; }
+  .theme-crt .panel, .theme-crt .result-heading { padding-inline: 8px; }
+  .theme-crt .result-actions { width: 100%; padding-inline: 8px; }
+}
