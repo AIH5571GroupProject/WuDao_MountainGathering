@@ -1,0 +1,21 @@
+# 主站、转场、集成与 CI
+/src/mountain/ @GavinKoo
+/src/MountainApp.tsx @GavinKoo
+/src/experiences/registry.ts @GavinKoo
+/src/experiences/types.ts @GavinKoo
+/src/experiences/ExperiencePortal.tsx @GavinKoo
+/src/experiences/bridge.ts @GavinKoo
+/scripts/ @GavinKoo
+/.github/ @GavinKoo
+/docs/ @GavinKoo
+
+# 各章目录：章主只被自动指派自己目录的 review
+# 用户名与流派的映射确认后取消注释并替换
+# /src/experiences/wingchun/ @liuy49355-coder
+# /src/experiences/shaolin/ @待补
+# /src/experiences/karate/ @待补
+# /src/experiences/boxing/ @待补
+# /src/experiences/sumo/ @待补
+
+# 各章素材目录同上，映射确认后一并填写
+# /public/experiences/wingchun/ @liuy49355-coder
