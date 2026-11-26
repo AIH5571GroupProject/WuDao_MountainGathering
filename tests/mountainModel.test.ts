@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { approachPath, canReturnByZoom, mountainArenas, OUTER_PEAKS, OVERVIEW_EYE, qualityFraction, rawHeight, safeCameraPoint, stagePose, terrainHeight } from '../src/mountain/model';
 import { makeDepthTerrain, makeFighters, makeMountainField, makeSurroundingMountains } from '../src/mountain/geometry';
+import { sumoCameraPose } from '../src/mountain/sumoShots';
 
 describe('mountain layout and continuous camera paths', () => {
   it('has one high summit above six separated clearings', () => {
@@ -25,7 +26,7 @@ describe('mountain layout and continuous camera paths', () => {
       expect(Math.abs(inside - outside)).toBeLessThan(.01);
     }
   });
-  it('keeps every sampled approach above the mountain and arrives at human scale', () => {
+  it('keeps every sampled approach above the mountain and frames its opening subject', () => {
     for (const a of mountainArenas) {
       const pose = stagePose(a);
       const curve = new THREE.CatmullRomCurve3(approachPath(OVERVIEW_EYE, a).map((p) => new THREE.Vector3(...p)));
@@ -44,6 +45,15 @@ describe('mountain layout and continuous camera paths', () => {
         expect(pose.eye[0]).toBe(pose.target[0]);
         expect(pose.eye[1]).toBe(pose.target[1]);
         expect(pixelHeight).toBeGreaterThan(200);
+      } else if (a.id === 'sumo') {
+        const roofPeak = new THREE.Vector3(a.x, a.elevation + 7.95, a.z).project(camera);
+        expect(roofPeak.y).toBeLessThan(1);
+        expect(pixelHeight).toBeLessThan(200);
+        const near = sumoCameraPose(a, 0, 7);
+        const facadeDistance = (eye: number[]) => Math.hypot(eye[0] - a.x, eye[2] - a.z);
+        expect(facadeDistance(pose.eye) - facadeDistance(near.eye)).toBeCloseTo(6.5);
+        expect(Math.abs(pose.eye[1] - near.eye[1])).toBeLessThan(.2);
+        expect(sumoCameraPose(a, 2).eye[1]).toBeLessThan(sumoCameraPose(a, 1).eye[1]);
       } else {
         expect(pixelHeight).toBeGreaterThan(280);
       }

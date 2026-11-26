@@ -69,6 +69,7 @@
 }
 
 .sumo-btn-primary {
+  min-height: 48px;
   padding: 11px 24px;
   background: #253422;
   border: 1px solid #253422;
@@ -86,6 +87,7 @@
 }
 
 .sumo-btn-ghost {
+  min-height: 44px;
   padding: 10px 18px;
   background: rgba(233, 236, 223, 0.84);
   border: 1px solid rgba(37, 52, 34, 0.3);
@@ -138,6 +140,13 @@
   border: 1px solid rgba(37, 52, 34, 0.24);
   box-shadow: 0 24px 60px rgba(37, 52, 34, 0.14);
   text-align: center;
+}
+
+.sumo-title-screen .sumo-title-card {
+  background: linear-gradient(180deg, #f2eee2, #ecebdd);
+  border: 1px solid #a79780;
+  border-top: 3px double #8e7356;
+  box-shadow: 0 20px 56px rgba(66, 53, 35, 0.15);
 }
 
 .sumo-title-crest {

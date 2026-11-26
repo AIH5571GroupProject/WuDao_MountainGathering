@@ -1,5 +1,6 @@
 import { arenaExperiences } from '../experiences/registry';
 import type { ArenaId } from '../data';
+import { sumoCameraPose } from './sumoShots';
 
 export type MountainArenaId = ArenaId | 'kendo';
 export type Phase = 'welcome' | 'arrival' | 'overview' | 'approach' | 'arena' | 'details' | 'returning' | 'opening' | 'closing' | 'game';
@@ -71,6 +72,7 @@ export const WELCOME_TARGET: Vec3 = [0, 35, -38];
 export const OVERVIEW_EYE: Vec3 = [72, 70, 104];
 export const OVERVIEW_TARGET: Vec3 = [0, 23, 0];
 export function stagePose(arena: MountainArena): { eye: Vec3; target: Vec3 } {
+  if (arena.id === 'sumo') return sumoCameraPose(arena, 0);
   if (arena.id === 'kendo') {
     const y = arena.elevation + 3.1;
     return { eye: [arena.x, y, arena.z - 11.2], target: [arena.x, y, arena.z + 30] };
