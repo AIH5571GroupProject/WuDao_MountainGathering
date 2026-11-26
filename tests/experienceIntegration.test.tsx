@@ -9,10 +9,15 @@ import type { ArenaExperience, ExperienceContext, ExperienceProps } from '../src
 const context: ExperienceContext = { version: 1, arenaId: 'shaolin', language: 'zh', soundEnabled: false, reducedMotion: false, quality: 'balanced', assets: arenaExperiences.shaolin.assets };
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 describe('collaborative experience integration', () => {
-  it('registers five independent reserved modules without enabling unfinished projects', () => {
+  it('registers five independent modules and only enables the sumo build', () => {
     expect(Object.keys(arenaExperiences)).toEqual(['shaolin', 'wingchun', 'karate', 'boxing', 'sumo']);
     expect(Object.values(arenaExperiences).map(x => x.number)).toEqual(['01', '02', '03', '04', '05']);
-    for (const [id, definition] of Object.entries(arenaExperiences)) { expect(definition.id).toBe(id); expect(definition.entry).toBeNull(); expect(definition.title.en).toBeTruthy(); }
+    for (const [id, definition] of Object.entries(arenaExperiences)) {
+      expect(definition.id).toBe(id);
+      if (id === 'sumo') expect(definition.entry).toMatchObject({ kind: 'react' });
+      else expect(definition.entry).toBeNull();
+      expect(definition.title.en).toBeTruthy();
+    }
     expect(arenaExperiences.shaolin.assets).not.toBe(arenaExperiences.boxing.assets);
   });
   it('resolves static projects below the GitHub repository path and rejects executable URL schemes', () => {
