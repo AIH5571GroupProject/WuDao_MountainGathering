@@ -78,6 +78,138 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--ink);outline-offset
 .kendo-fallback{position:absolute;top:45%;width:100%;text-align:center;font:15px var(--serif)}
 @media(max-width:750px){.kendo-preparation{--film-top:82px;--film-bottom:205px}.kendo-controls{gap:5px;flex-wrap:wrap;padding:4px 7px}.kendo-controls button{font-size:10px;padding:4px 6px;min-height:34px}.kendo-shots{order:-1;width:100%;gap:4px}.kendo-shots button{flex:1;min-width:0}.kendo-rail{bottom:calc(var(--film-bottom) - 116px)}.kendo-caption p{font-size:11px}.kendo-heading{left:calc(var(--film-inset) + 12px)}.kendo-frame-title{right:calc(var(--film-inset) + 10px)}.is-kendo-film .mountain-footer{display:none}}
 
+.sumo-preparation,
+.sumo-game-portal {
+  --control-paper: #f1eee2;
+  --control-ink: #3f392d;
+  --control-wood: #594330;
+  --control-border: #958066;
+}
+
+.journey-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 8px 15px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--control-border);
+  border-radius: 3px;
+  background: var(--control-paper);
+  color: var(--control-ink);
+  font: 14px/1.35 var(--serif);
+  text-decoration: none;
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+
+.journey-button:not(:disabled):hover {
+  background: #e6dcc7;
+  border-color: var(--control-wood);
+}
+
+.journey-button:focus-visible { outline: 2px solid #704e34; outline-offset: 3px; }
+.journey-button:disabled { opacity: 1; color: #655a48; background: #ded9c9; }
+
+.journey-button.journey-primary {
+  min-height: 48px;
+  padding-inline: 21px;
+  background: var(--control-wood);
+  border-color: var(--control-wood);
+  color: #fff6e6;
+  white-space: nowrap;
+}
+
+.journey-button.journey-primary:not(:disabled):hover { background: #6d5038; }
+.journey-button.journey-primary:disabled { background: #736453; }
+
+.sumo-game-portal .game-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  background: var(--control-paper);
+  color: var(--control-ink);
+}
+
+.sumo-game-portal .game-toolbar .journey-button {
+  justify-self: start;
+  padding-inline: 14px;
+  border: 1px solid var(--control-border);
+  background: var(--control-paper);
+  color: var(--control-ink);
+  font: 14px/1.35 var(--serif);
+}
+.sumo-game-portal .game-toolbar .journey-button:hover { background: #e6dcc7; border-color: var(--control-wood); }
+.sumo-game-portal .game-toolbar-title { display: block; font: 13px/1.3 var(--serif); letter-spacing: .1em; text-align: center; }
+
+.is-sumo-film .paper-edges {
+  background: linear-gradient(180deg, #e9ecdf, rgba(233,236,223,.48) 12%, transparent 25%, transparent 63%, rgba(233,236,223,.75) 83%, #e9ecdf 98%);
+}
+
+.sumo-preparation {
+  --film-side: clamp(16px, 4vw, 74px);
+  --film-top: clamp(82px, 13vh, 128px);
+  --film-bottom: clamp(72px, 12vh, 130px);
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  pointer-events: none;
+  color: var(--control-ink);
+}
+
+.sumo-film-frame {
+  position: absolute;
+  inset: var(--film-top) var(--film-side) var(--film-bottom);
+  border: 1px solid rgba(89,67,48,.36);
+  box-shadow: inset 0 0 70px rgba(89,67,48,.067);
+}
+
+.sumo-film-title {
+  position: absolute;
+  inset: calc(var(--film-top) + 14px) auto auto calc(var(--film-side) + 16px);
+  background: rgba(241,238,226,.91);
+  border-top: 1px solid var(--control-border);
+  padding: 9px 13px 11px;
+}
+
+.sumo-film-title .overline { color: #685844; }
+.sumo-film-title h1 { font: 400 clamp(25px, 3vw, 46px)/1.14 var(--serif); letter-spacing: .17em; margin: 4px 0 12px; }
+.sumo-film-title button, .sumo-film-rail { pointer-events: auto; }
+.sumo-film-rail {
+  position: absolute;
+  inset: auto var(--film-side) var(--film-bottom);
+  background: var(--control-paper);
+  border-block: 1px solid rgba(89,67,48,.42);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+.sumo-film-copy h2 { margin: 0 0 4px; font: 400 19px/1.28 var(--serif); letter-spacing: .05em; }
+.sumo-film-copy p { margin: 0; font: 13px/1.55 var(--serif); color: #584e3b; }
+.sumo-film-actions, .sumo-film-shots { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.sumo-film-shots small { font: 11px/1 Georgia, serif; }
+.sumo-film-shots button[aria-pressed="true"] { border-color: #7b5c41; background: #dfd2b8; }
+.sumo-film-pause:not(:disabled) { background: transparent; border-color: #a79780; }
+.sumo-film-next { margin-left: auto; }
+
+@media (max-width: 760px) {
+  .sumo-preparation { --film-bottom: 18px; --film-top: 76px; }
+  .is-sumo-film .mountain-footer { display: none; }
+  .sumo-film-title { inset: calc(var(--film-top) + 8px) auto auto calc(var(--film-side) + 8px); padding: 8px 10px; }
+  .sumo-film-title h1 { margin-bottom: 8px; }
+  .sumo-film-rail { padding: 9px; gap: 8px; }
+  .sumo-film-actions { width: 100%; }
+  .sumo-film-actions .journey-button { padding-inline: 9px; font-size: 12px; gap: 5px; }
+  .sumo-game-portal .game-toolbar { gap: 6px; padding-inline: 10px; }
+  .sumo-game-portal .game-toolbar-title { font-size: 11px; }
+  .sumo-game-portal .game-toolbar .journey-button { padding-inline: 8px; font-size: 12px; }
+}
+
 /* The entrance shares the paper, ink and CRT of the mountain, before the map UI appears. */
 .mountain-welcome{position:absolute;z-index:19;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px;transition:opacity .85s,transform 1.5s;animation:welcome-in 1.6s ease both}
 .mountain-welcome .overline{font-size:10px;letter-spacing:.28em;color:#6f7e65}

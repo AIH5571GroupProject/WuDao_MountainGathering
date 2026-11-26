@@ -43,9 +43,10 @@ export function ExperiencePortal({ definition, context, onClose }: { definition:
     if (url && status === 'ready') iframe.current?.contentWindow?.postMessage({ type: 'wudao:context', ...context }, new URL(url).origin);
   }, [context, status, url]);
   const props: ExperienceProps = { ...context, paused, onExit: onClose, onComplete: complete };
-  return <section className="game-portal" role="dialog" aria-modal="true" aria-label={definition.title[context.language]}>
-    <div className="game-toolbar"><button ref={close} onClick={onClose}>← {tx('退出体验 · 返回篇章', 'Leave experience · Back to chapter')}</button>
-      <span>{definition.number} / {definition.title[context.language]}</span>
+  const isSumo = definition.id === 'sumo';
+  return <section className={isSumo ? 'game-portal sumo-game-portal' : 'game-portal'} role="dialog" aria-modal="true" aria-label={definition.title[context.language]}>
+    <div className="game-toolbar"><button className={isSumo ? 'journey-button' : undefined} ref={close} onClick={onClose}>← {isSumo ? tx('退出相扑', 'Exit Sumo') : tx('退出体验 · 返回篇章', 'Leave experience · Back to chapter')}</button>
+      <span className="game-toolbar-title">{definition.number} / {definition.title[context.language]}</span>
       {url && <a href={url} target="_blank" rel="noopener noreferrer">{tx('独立窗口', 'Open separately')} ↗</a>}
     </div>
     {url && <iframe key={attempt} ref={iframe} src={url} title={definition.title[context.language] + ' experience'}
@@ -54,6 +55,6 @@ export function ExperiencePortal({ definition, context, onClose }: { definition:
     {((url && status !== 'ready') || status === 'error') && <div className="game-loading" role="status"><p>{status === 'error' ? tx('体验暂未就绪，可以重试或返回篇章。', 'The experience is not ready. Retry or return to the chapter.') : tx('新境正在聚拢…', 'The scene is gathering…')}</p>
       {status === 'error' && <button onClick={() => { setStatus('loading'); setAttempt(a => a + 1); }}>{tx('重新载入', 'Try again')}</button>}
     </div>}
-    <div className="game-footnote">{tx('左上角退出并返回 · 离开时结束当前体验', 'Use the top-left button to return · Leaving ends the current experience')}</div>
+    <div className="game-footnote">{isSumo ? tx('退出将返回仕切镜头', 'Exiting returns to the ready position') : tx('左上角退出并返回 · 离开时结束当前体验', 'Use the top-left button to return · Leaving ends the current experience')}</div>
   </section>;
 }

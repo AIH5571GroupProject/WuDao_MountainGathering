@@ -12,7 +12,8 @@ vi.mock('../src/mountain/MountainWorld', () => ({ default: (props: ComponentProp
   return <div data-testid="world" />;
 } }));
 beforeEach(() => { localStorage.clear(); Object.defineProperty(window, 'matchMedia', { configurable: true, value: () => ({ matches: false }) }); renderer.props = null; });
-afterEach(() => { Object.values(arenaExperiences).forEach(e => { e.entry = null; }); cleanup(); vi.restoreAllMocks(); });
+const originalEntries = Object.values(arenaExperiences).map(definition => definition.entry);
+afterEach(() => { Object.values(arenaExperiences).forEach((definition, i) => { definition.entry = originalEntries[i]; }); cleanup(); vi.restoreAllMocks(); });
 async function open() {
   const result = render(<App />);
   await waitFor(() => expect(screen.getByTestId('world')).toBeTruthy());
@@ -51,11 +52,32 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
       expect(renderer.props!.command.id).toBe(a.id);
       expect(renderer.props!.arena?.id).toBe(a.id);
       act(() => renderer.props!.onArrive(a.id));
-      expect(container.querySelector('main')?.getAttribute('data-phase')).toBe(a.id === 'kendo' ? 'details' : 'arena');
-      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(a.id === 'kendo' ? a.cn : a.place);
+      const hasFilm = a.id === 'kendo' || a.id === 'sumo';
+      expect(container.querySelector('main')?.getAttribute('data-phase')).toBe(hasFilm ? 'details' : 'arena');
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(hasFilm ? a.cn : a.place);
     }
     expect(screen.getByLabelText('已寻访 6/6')).toBeTruthy();
     expect(JSON.parse(localStorage.getItem('wudao:mountain-visits:v1')!)).toHaveLength(6);
+  });
+  it('gates the sumo game on the settled ready shot and returns to it on exit', async () => {
+    arenaExperiences.sumo.entry = { kind: 'react', load: async () => ({ default: ({ onExit }) => <button onClick={onExit}>Exit sumo project</button> }) };
+    await open();
+    fireEvent.keyDown(window, { key: '5' });
+    act(() => renderer.props!.onArrive('sumo'));
+    expect(screen.getByRole('heading', { name: '土俵' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: '进入相扑' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: '撒盐' }));
+    act(() => renderer.props!.onSumoShotReady(1));
+    fireEvent.click(screen.getByRole('button', { name: '仕切' }));
+    expect((screen.getByRole('button', { name: '进入相扑' }) as HTMLButtonElement).disabled).toBe(true);
+    act(() => renderer.props!.onSumoShotReady(2));
+    fireEvent.click(screen.getByRole('button', { name: '进入相扑' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    act(() => renderer.props!.onChapter());
+    fireEvent.click(await screen.findByRole('button', { name: 'Exit sumo project' }));
+    act(() => renderer.props!.onChapter());
+    expect(screen.getByRole('heading', { name: '仕切' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: '进入相扑' }));
   });
   it('opens the separate Kendo game only after the particle transition and removes it on exit', async () => {
     const { container } = await open();

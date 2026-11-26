@@ -9,29 +9,34 @@ import { approachPath, canReturnByZoom, mountainArenas, OVERVIEW_EYE, OVERVIEW_T
 import { makeAtmosphere, makeClouds, makeContours, makeDepthTerrain, makeFighters, makeMountainField, makeSurroundingMountains, makeStageBamboo, makeTrail } from './geometry';
 import { ArrivalMist } from './ArrivalMist';
 import { KendoFilm } from './KendoFilm';
+import { SumoFilm } from './SumoFilm';
+import { sumoCameraPose, sumoLens, sumoShots } from './sumoShots';
 import { particleTransition } from './transition';
 import { createActorMaterial, createFieldMaterial } from './materials';
 
 type Props = { command: CameraCommand; phase: Phase; arena: MountainArena | null; language: 'zh' | 'en'; quality: Quality; calm: boolean; sparring: boolean; kendoShot?: number; kendoPaused?: boolean;
+  sumoShot: number; sumoPaused: boolean; onSumoShotReady: (shot: number) => void; onSumoShotEnd: (shot: number) => void;
   onEnter: (id: ArenaId) => void; onHover: (id: ArenaId | null) => void; onArrive: (id: ArenaId) => void; onOverview: () => void;
   onProgress: (value: number) => void; onPullBack: () => void; onChapter: () => void; onEncounter: () => void; onReady: () => void; onError: (message: string) => void; onToggleSparring: () => void };
 type Visual = { arrival: number; visibility: number; page: number; scatter: number; stage: number; activeStage: ArenaId | null; time: number; fightTime: number; pointer: THREE.Vector3; pointerInside: boolean;
-  ripple: THREE.Vector3; rippleAt: number; hovered: ArenaId | null };
+  ripple: THREE.Vector3; rippleAt: number; hovered: ArenaId | null; sumoFrame: number; sumoTime: number };
 type VRef = MutableRefObject<Visual>;
 
-function CameraJourney({ command, phase, arena, visual, controls, calm, onArrive, onOverview, onProgress, onPullBack, onChapter, onEncounter }: Props & { visual: VRef; controls: MutableRefObject<OrbitImpl | null> }) {
+function CameraJourney({ command, phase, arena, visual, controls, calm, sumoShot, sumoPaused, onSumoShotReady, onSumoShotEnd, onArrive, onOverview, onProgress, onPullBack, onChapter, onEncounter }: Props & { visual: VRef; controls: MutableRefObject<OrbitImpl | null> }) {
   const { camera } = useThree();
   const savedOverview = useRef({ eye: new THREE.Vector3(...OVERVIEW_EYE), target: new THREE.Vector3(...OVERVIEW_TARGET) });
   const phaseRef = useRef(phase); phaseRef.current = phase;
   const callbacks = useRef({ onArrive, onOverview, onProgress, onPullBack, onChapter, onEncounter }); callbacks.current = { onArrive, onOverview, onProgress, onPullBack, onChapter, onEncounter };
   const animation = useRef<{ start: number; duration: number; curve: THREE.Curve<THREE.Vector3>; targetFrom: THREE.Vector3; targetTo: THREE.Vector3;
-    kind: CameraCommand['kind']; arenaId?: ArenaId; pageFrom: number } | null>(null);
+    kind: CameraCommand['kind']; arenaId?: ArenaId; pageFrom: number; stageSwapped?: boolean } | null>(null);
   const lens = useRef('');
+  const sumoCut = useRef<{ fromEye: THREE.Vector3; fromTarget: THREE.Vector3; toEye: THREE.Vector3; toTarget: THREE.Vector3; elapsed: number; shot: number } | null>(null);
   const now = useRef(0), lastReport = useRef(0), returnIssued = useRef(false);
   const calmRef = useRef(calm); calmRef.current = calm;
   useEffect(() => {
     const c = controls.current;
     if (!c) return;
+    sumoCut.current = null;
     const currentEye = camera.position.clone();
     const currentTarget = c.target.clone();
     // Discard residual orbit velocity so it cannot reappear at the end of a flight.
@@ -74,13 +79,15 @@ function CameraJourney({ command, phase, arena, visual, controls, calm, onArrive
     c.enabled = false;
   }, [command, camera, controls, visual]);
 
-  useFrame(({ size }) => {
-    if (camera instanceof THREE.PerspectiveCamera) {
-      const film = visual.current.activeStage === 'kendo';
-      const key = film ? `${size.width}x${size.height}` : '';
+  useFrame(({ size }, delta) => {
+    if (camera instanceof THREE.PerspectiveCamera && size.width && size.height) {
+      const { activeStage: stage, sumoFrame } = visual.current;
+      const offset = stage === 'kendo' ? .095 : stage === 'sumo' ? (sumoFrame === 0 ? .012 : .07) : 0;
+      const key = `${stage}/${stage === 'sumo' ? sumoFrame : ''}/${size.width}x${size.height}`;
       if (lens.current !== key) {
         lens.current = key;
-        if (film) camera.setViewOffset(size.width, size.height, 0, Math.round(size.height * .095), size.width, size.height);
+        camera.fov = stage === 'sumo' ? sumoLens(sumoFrame, size.width / size.height) : 44;
+        if (offset) camera.setViewOffset(size.width, size.height, 0, Math.round(size.height * offset), size.width, size.height);
         else camera.clearViewOffset();
       }
     }
@@ -94,17 +101,24 @@ function CameraJourney({ command, phase, arena, visual, controls, calm, onArrive
       const t = Math.min(1, Math.max(0, (now.current - tween.start) / tween.duration));
       const ease = tween.kind === 'zoom' || tween.kind === 'begin' ? smoothstep(0, 1, t) : smoothstep(.37, .53, t);
       const raw = tween.curve.getPoint(ease);
-      const safe = safeCameraPoint(raw.toArray() as Vec3);
-      camera.position.set(...safe);
+      const isPage = tween.kind === 'chapter' || tween.kind === 'encounter';
+      // The film stage has its own floor and the mountain is hidden during a chapter transition.
+      const inSumo = (isPage && visual.current.activeStage === 'sumo') || (tween.arenaId === 'sumo' && t >= .46);
+      if (inSumo) camera.position.copy(raw);
+      else camera.position.set(...safeCameraPoint(raw.toArray() as Vec3));
       c.target.lerpVectors(tween.targetFrom, tween.targetTo, ease);
       camera.lookAt(c.target);
-      const isPage = tween.kind === 'chapter' || tween.kind === 'encounter';
       const morph = particleTransition(t, tween.pageFrom, tween.kind === 'chapter' ? 1 : 0, calmRef.current);
       if (tween.kind === 'begin') visual.current.arrival = t;
       visual.current.page = morph.page;
       visual.current.scatter = tween.kind === 'zoom' || tween.kind === 'begin' ? 0 : morph.scatter;
       visual.current.visibility = tween.kind === 'zoom' || tween.kind === 'begin' ? 1 : morph.visibility;
       if (t >= .46 && tween.kind === 'enter') {
+        if (!tween.stageSwapped && tween.arenaId === 'sumo') {
+          visual.current.sumoFrame = 0;
+          visual.current.sumoTime = 0;
+        }
+        tween.stageSwapped = true;
         visual.current.activeStage = tween.arenaId!;
         visual.current.stage = 1;
       } else if (t >= .46 && tween.kind !== 'zoom' && !isPage) {
@@ -119,6 +133,40 @@ function CameraJourney({ command, phase, arena, visual, controls, calm, onArrive
         else if (tween.kind === 'encounter') callbacks.current.onEncounter();
         else if (tween.kind === 'enter') callbacks.current.onArrive(tween.arenaId!);
         else if (tween.kind !== 'zoom') { visual.current.stage = 0; visual.current.activeStage = null; callbacks.current.onOverview(); }
+      }
+    } else if (phase === 'details' && arena?.id === 'sumo' && visual.current.activeStage === 'sumo') {
+      const frame = visual.current;
+      c.enabled = false;
+      if (!sumoCut.current && frame.sumoFrame !== sumoShot) {
+        const pose = sumoCameraPose(arena, sumoShot);
+        sumoCut.current = { shot: sumoShot, elapsed: 0, fromEye: camera.position.clone(), fromTarget: c.target.clone(),
+          toEye: new THREE.Vector3(...pose.eye), toTarget: new THREE.Vector3(...pose.target) };
+      }
+      const cut = sumoCut.current;
+      if (cut) {
+        cut.elapsed += Math.min(delta, .08);
+        const t = Math.min(1, cut.elapsed / (calm ? .28 : 1.65));
+        // Travel toward the next composition as the old shot disperses.
+        const ease = smoothstep(.09, .81, t);
+        camera.position.lerpVectors(cut.fromEye, cut.toEye, ease);
+        c.target.lerpVectors(cut.fromTarget, cut.toTarget, ease);
+        camera.lookAt(c.target);
+        const morph = particleTransition(t, 0, 0, calm);
+        frame.scatter = morph.scatter;
+        frame.visibility = morph.visibility;
+        if (t >= .46) { frame.sumoFrame = cut.shot; frame.sumoTime = 0; }
+        if (t === 1) { sumoCut.current = null; onSumoShotReady(cut.shot); }
+      } else if (!sumoPaused && !document.hidden) {
+        const previous = frame.sumoTime;
+        frame.sumoTime += Math.min(delta, .25);
+        if (frame.sumoFrame === 0 && !calm) {
+          const pose = sumoCameraPose(arena, 0, frame.sumoTime);
+          camera.position.set(...pose.eye);
+          c.target.set(...pose.target);
+          camera.lookAt(c.target);
+        }
+        const duration = sumoShots[frame.sumoFrame].duration / 1000;
+        if (duration && previous < duration && frame.sumoTime >= duration) onSumoShotEnd(frame.sumoFrame);
       }
     } else {
       if (phaseRef.current === 'overview') {
@@ -260,7 +308,7 @@ function MountainScene(props: Props & { visual: VRef }) {
     <primitive ref={trail} object={trailObject} />
     {mountainArenas.map((arena, index) => <Hotspot key={arena.id} arena={arena} index={index} visual={visual} language={props.language} phase={phase} onEnter={props.onEnter} onHover={props.onHover} />)}
     {mountainArenas.map((arena, i) => <group key={`stage-${arena.id}`} position={[arena.x, arena.elevation + .2, arena.z]} rotation={[0, arena.angle, 0]}>
-      {arena.id === 'kendo' ? <KendoFilm visual={visual} shot={props.kendoShot ?? 0} paused={!!props.kendoPaused} /> : <>
+      {arena.id === 'kendo' ? <KendoFilm visual={visual} shot={props.kendoShot ?? 0} paused={!!props.kendoPaused} /> : arena.id === 'sumo' ? <SumoFilm visual={visual} calm={calm} /> : <>
       <Field geometry={stageData.bamboo} visual={visual} quality={quality} calm={calm} layer="stage" arenaId={arena.id} />
       <Field geometry={stageData.air} visual={visual} quality={quality} calm={calm} layer="stage" arenaId={arena.id} />
       <Field geometry={stageData.clouds} visual={visual} quality={quality} calm={calm} layer="stage" arenaId={arena.id} />
@@ -280,7 +328,7 @@ function MountainScene(props: Props & { visual: VRef }) {
 
 export default function MountainWorld(props: Props) {
   const visual = useRef<Visual>({ arrival: props.phase === 'welcome' ? 0 : 1, visibility: 1, page: 0, scatter: 0, stage: 0, activeStage: null, time: 0, fightTime: .5, pointer: new THREE.Vector3(1e5, 1e5, 1e5), pointerInside: false,
-    ripple: new THREE.Vector3(), rippleAt: -100, hovered: null });
+    ripple: new THREE.Vector3(), rippleAt: -100, hovered: null, sumoFrame: 0, sumoTime: 0 });
   const hovered = useRef<ArenaId | null>(null);
   const onHover = (id: ArenaId | null) => { visual.current.hovered = id; hovered.current = id; props.onHover(id); };
   const phase = useRef(props.phase); phase.current = props.phase;
