@@ -132,8 +132,8 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     fireEvent.click(screen.getByRole('button', { name: '静息模式' }));
     expect(renderer.props!.calm).toBe(true);
     fireEvent.keyDown(window, { key: '3' });
-    expect(renderer.props!.command.id).toBe('karate');
-    act(() => renderer.props!.onArrive('karate'));
+    expect(renderer.props!.command.id).toBe('taekwondo');
+    act(() => renderer.props!.onArrive('taekwondo'));
     fireEvent.click(screen.getByRole('button', { name: /暂停切磋/ }));
     expect(renderer.props!.sparring).toBe(false);
     act(() => renderer.props!.onToggleSparring());

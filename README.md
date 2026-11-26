@@ -33,7 +33,7 @@ npm run build
 | --- | --- | --- |
 | 01 | 少林 | `src/experiences/shaolin/index.ts` |
 | 02 | 咏春 | `src/experiences/wingchun/index.ts` |
-| 03 | 空手道 | `src/experiences/karate/index.ts` |
+| 03 | 跆拳道 | `src/experiences/taekwondo/index.ts` |
 | 04 | 拳击 | `src/experiences/boxing/index.ts` |
 | 05 | 相扑 | `src/experiences/sumo/index.ts` |
 | 06 | 剑道 / 御风 | `src/mountain/KendoPreparation.tsx` 与 `integrations/wingbrone/` |

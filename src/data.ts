@@ -1,4 +1,4 @@
-export type ArenaId = "shaolin" | "wingchun" | "karate" | "boxing" | "sumo";
+export type ArenaId = "shaolin" | "wingchun" | "taekwondo" | "boxing" | "sumo";
 
 export type Arena = {
   id: ArenaId;
@@ -28,7 +28,7 @@ export const arenas: Arena[] = [
     mapPoint: [.374, .557], mapOutline: 'M299 542 Q343 502 413 534 L439 574 Q398 608 333 588 Z',
   },
   {
-    id: "karate", cn: "空手道", en: "Karate", cnTitle: "空手道 · 云石台", enTitle: "Karate · Cloudstone Terrace",
+    id: "taekwondo", cn: "跆拳道", en: "Taekwondo", cnTitle: "跆拳道 · 云石台", enTitle: "Taekwondo · Cloudstone Terrace",
     cnLine: "一声喝，惊起林梢几片新叶。", enLine: "One sharp breath sends the newest leaves into the air.",
     position: [0.1, 0.15, 1.5], color: "#b5a76f",
     mapPoint: [.565, .181], mapOutline: 'M528 169 L562 160 L599 177 L574 200 L538 189 Z',
