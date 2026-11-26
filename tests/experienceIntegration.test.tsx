@@ -9,12 +9,13 @@ import type { ArenaExperience, ExperienceContext, ExperienceProps } from '../src
 const context: ExperienceContext = { version: 1, arenaId: 'shaolin', language: 'zh', soundEnabled: false, reducedMotion: false, quality: 'balanced', assets: arenaExperiences.shaolin.assets };
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 describe('collaborative experience integration', () => {
-  it('registers five independent modules and only enables the sumo build', () => {
+  it('registers five independent modules and enables the finished builds', () => {
     expect(Object.keys(arenaExperiences)).toEqual(['shaolin', 'wingchun', 'taekwondo', 'boxing', 'sumo']);
     expect(Object.values(arenaExperiences).map(x => x.number)).toEqual(['01', '02', '03', '04', '05']);
     for (const [id, definition] of Object.entries(arenaExperiences)) {
       expect(definition.id).toBe(id);
       if (id === 'sumo') expect(definition.entry).toMatchObject({ kind: 'react' });
+      else if (id === 'taekwondo') expect(definition.entry).toMatchObject({ kind: 'iframe' });
       else expect(definition.entry).toBeNull();
       expect(definition.title.en).toBeTruthy();
     }
