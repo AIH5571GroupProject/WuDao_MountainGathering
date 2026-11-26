@@ -12,13 +12,13 @@
 # 各章目录：章主只被自动指派自己目录的 review
 /src/experiences/wingchun/ @liuy49355-coder
 /src/experiences/sumo/ @chescheswu
-/src/experiences/karate/ @pcamity
+/src/experiences/taekwondo/ @pcamity
 /src/experiences/shaolin/ @zhengxy0608-eng
 /src/experiences/boxing/ @cassiusye
 
 # 各章素材目录
 /public/experiences/wingchun/ @liuy49355-coder
 /public/experiences/sumo/ @chescheswu
-/public/experiences/karate/ @pcamity
+/public/experiences/taekwondo/ @pcamity
 /public/experiences/shaolin/ @zhengxy0608-eng
 /public/experiences/boxing/ @cassiusye

@@ -122,7 +122,7 @@ export default function MapAtlas({ arenas, selected, language, command, active, 
           <path className="clearing-etch" d={arena.mapOutline} />
         </g>)}
       </svg>
-      {arenas.map((arena, i) => <div className={`map-marker-anchor ${arena.id === 'karate' ? 'label-below' : ''}`} key={arena.id} style={{ left: `${arena.mapPoint[0] * 100}%`, top: `${arena.mapPoint[1] * 100}%` }}>
+      {arenas.map((arena, i) => <div className={`map-marker-anchor ${arena.id === 'taekwondo' ? 'label-below' : ''}`} key={arena.id} style={{ left: `${arena.mapPoint[0] * 100}%`, top: `${arena.mapPoint[1] * 100}%` }}>
         <button className={`map-marker ${selected?.id === arena.id ? 'selected' : ''}`} onClick={() => onSelect(arena)} aria-label={`${arena.cn} ${arena.en}`} aria-pressed={selected?.id === arena.id}>
           <span className="marker-number">0{i + 1}</span>
           <span className="marker-name">{language === 'zh' ? arena.cn : arena.en}<small>{language === 'zh' ? arena.en.toUpperCase() : arena.cn}</small></span>

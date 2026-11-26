@@ -2,7 +2,7 @@
 
 ## 目录和路由
 
-每个武道的注册文件是 `src/experiences/<arenaId>/index.ts`：`shaolin`、`wingchun`、`karate`、`boxing`、`sumo`。注册表自动接回山图，不需要修改主站流程。
+每个武道的注册文件是 `src/experiences/<arenaId>/index.ts`：`shaolin`、`wingchun`、`taekwondo`、`boxing`、`sumo`。注册表自动接回山图，不需要修改主站流程。
 
 流程：山图 → 双人切磋 →「进入篇章」→ 全屏预留页 → 已配置时出现「进入体验」→ 粒子散尽、聚拢 → 挂载模块。退出体验 → 粒子转场 → 原篇章；从篇章可回到切磋或山图。未完成的模块保留 `entry: null`，不会出现空白游戏按钮。
 

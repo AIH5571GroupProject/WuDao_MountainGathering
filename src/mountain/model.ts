@@ -41,7 +41,7 @@ export function rawHeight(x: number, z: number) {
 const definitions = [
   { id: 'shaolin', cn: '少林', en: 'Shaolin', place: '松风院', placeEn: 'Pinewind Court', x: -23, z: -9, color: '#829274', line: '拳从静处起，山风替你记住每一招。', lineEn: 'A quiet stance. A mountain breeze. Every movement leaves an echo.', invitation: '先站稳，再听山风。' },
   { id: 'wingchun', cn: '咏春', en: 'Wing Chun', place: '听竹坪', placeEn: 'Listening Grove', x: -17, z: 23, color: '#9aa37b', line: '寸劲落在竹影间，前方留出一处空地。', lineEn: 'Short strikes meet long shadows in a clearing among the bamboo.', invitation: '一寸之间，自有天地。' },
-  { id: 'karate', cn: '空手道', en: 'Karate', place: '云石台', placeEn: 'Cloudstone Terrace', x: 18, z: -20, color: '#b0aa7d', line: '一声喝，惊起林梢几片新叶。', lineEn: 'A sharp breath. A few new leaves rise above the grove.', invitation: '让一声呼吸，穿过云雾。' },
+  { id: 'taekwondo', cn: '跆拳道', en: 'Taekwondo', place: '云石台', placeEn: 'Cloudstone Terrace', x: 18, z: -20, color: '#b0aa7d', line: '一声喝，惊起林梢几片新叶。', lineEn: 'A sharp breath. A few new leaves rise above the grove.', invitation: '让一声呼吸，穿过云雾。' },
   { id: 'boxing', cn: '拳击', en: 'Boxing', place: '回声谷', placeEn: 'Echo Hollow', x: 27, z: 15, color: '#8b9b85', line: '拳风绕过山坳，在竹海里兜一圈再回来。', lineEn: 'A swift cross circles the hollow and returns as an echo.', invitation: '跟着脚步，找自己的节奏。' },
   { id: 'sumo', cn: '相扑', en: 'Sumo', place: '大地席', placeEn: 'Earth Ring', x: 1, z: 37, color: '#a49b79', line: '脚步一沉，整片山林都轻轻晃了一下。', lineEn: 'A grounded step. Even the mountain seems to sway.', invitation: '脚下是山，心中是定。' },
   { id: 'kendo', cn: '剑道', en: 'Kendo', place: '御风台', placeEn: 'Windborne Terrace', x: 0, z: -40, color: '#829274', line: '御剑乘风，在竹影之间读懂来势。', lineEn: 'Ride the wind. Read the next move among the bamboo.', invitation: '循着剑意，进入御风。' },
