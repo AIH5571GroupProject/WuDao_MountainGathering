@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>回声谷 · 拳击 | 武道山集</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="exhibition-root">
+    <!-- Full-viewport Ink-Wash & Woodblock Interactive Canvas -->
+    <canvas id="stage" aria-label="Echo Hollow Boxing Canvas"></canvas>
+
+    <!-- Subtle Exhibition Corner Mark (Top-Left) -->
+    <header id="corner-brand" aria-hidden="true">
+      <span class="seal-mini" id="corner-seal">拳 · 04</span>
+      <span class="brand-name" id="corner-title">回声谷 · 拳击</span>
+    </header>
+
+    <!-- Subtle Utility Bar (Top-Right) -->
+    <nav id="utility-bar" aria-label="Exhibition Controls">
+      <button id="btn-lang" class="util-btn" type="button" title="Language">EN</button>
+      <button id="btn-sound" class="util-btn" type="button" aria-pressed="true" title="Sound">音</button>
+      <button id="btn-motion" class="util-btn" type="button" aria-pressed="false" title="Reduced Motion">动观</button>
+      <div id="jump-wrap" class="jump-wrap">
+        <button id="btn-jump-toggle" class="util-btn util-jump" type="button" aria-expanded="false" aria-controls="jump-menu">章节 ▾</button>
+        <div id="jump-menu" class="jump-menu hidden" role="menu">
+          <div class="jump-menu-title" id="jump-menu-title">章节跳转</div>
+          <button class="jump-item" type="button" role="menuitem" data-jump="prologue" id="jump-opt-prologue">序 · 起势定架</button>
+          <button class="jump-item" type="button" role="menuitem" data-jump="act1" id="jump-opt-act1">壹 · 速度球拍</button>
+          <button class="jump-item" type="button" role="menuitem" data-jump="r1" id="jump-opt-r1">贰 · 第一回合</button>
+          <button class="jump-item" type="button" role="menuitem" data-jump="r2" id="jump-opt-r2">贰 · 第二回合</button>
+          <button class="jump-item" type="button" role="menuitem" data-jump="r3" id="jump-opt-r3">贰 · 决胜回合</button>
+          <button class="jump-item" type="button" role="menuitem" data-jump="epilogue" id="jump-opt-epilogue">终 · 收拳回响</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Minimal Exhibition HUD (Hidden on Prologue Placard & Epilogue) -->
+    <section id="hud" class="hud hidden" aria-live="polite">
+      <!-- Left: Player Resolve & Breath -->
+      <div id="hud-player" class="hud-wing hud-player">
+        <div class="hud-meta-row">
+          <span class="hud-actor" id="player-name-label">山客 · 你</span>
+          <span class="hud-value">
+            <span class="hud-kind" id="player-resolve-kind">定力</span>
+            <span id="player-resolve-text">100 / 100</span>
+          </span>
+        </div>
+        <div class="bar-track bar-resolve">
+          <div id="player-resolve-bar" class="bar-fill fill-resolve"></div>
+        </div>
+        <div class="breath-row">
+          <span class="breath-label" id="player-breath-kind">气息</span>
+          <div class="bar-track bar-breath">
+            <div id="player-breath-bar" class="bar-fill fill-breath"></div>
+          </div>
+        </div>
+        <div id="combo-pill" class="combo-pill">0 连击</div>
+      </div>
+
+      <!-- Center: Act / Round Indicator, Timer & Poetic Subtitle -->
+      <div id="hud-center" class="hud-center">
+        <div id="act-badge" class="act-badge">序幕 · 入谷听风</div>
+        <div id="timer-display" class="timer-display">00:00</div>
+        <div id="phase-subtitle" class="phase-subtitle">校准步法、拳路与抱架</div>
+      </div>
+
+      <!-- Right: Context Panel (Act II Opponent OR Act I Rhythm Meter) -->
+      <div id="hud-right" class="hud-wing hud-right">
+        <!-- Act II Opponent Posture / Resolve -->
+        <div id="hud-opponent" class="right-panel hidden">
+          <div class="hud-meta-row">
+            <span class="hud-value">
+              <span class="hud-kind" id="opponent-bar-kind">架势</span>
+              <span id="opponent-bar-text">320 / 320</span>
+            </span>
+            <span class="hud-actor actor-opponent" id="opponent-name-label">谷中拳师</span>
+          </div>
+          <div class="bar-track bar-opponent">
+            <div id="opponent-bar-fill" class="bar-fill fill-opponent"></div>
+          </div>
+          <div class="opponent-sub-row">
+            <span id="breaks-badge" class="breaks-badge hidden">破势 ×0</span>
+          </div>
+        </div>
+
+        <!-- Act I Speed Bag Rhythm Meter -->
+        <div id="hud-rhythm" class="right-panel hidden">
+          <div class="hud-meta-row">
+            <span class="hud-value" id="rhythm-acc-text">100%</span>
+            <span class="hud-actor" id="rhythm-meter-label">回声合拍</span>
+          </div>
+          <div class="bar-track bar-rhythm">
+            <div id="rhythm-bar-fill" class="bar-fill fill-rhythm"></div>
+          </div>
+          <div class="opponent-sub-row">
+            <span id="rhythm-streak-text" class="streak-badge">0 连拍</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prologue Live Stance Calibration Strip -->
+    <aside id="calib-panel" class="calib-panel hidden" aria-live="polite">
+      <div class="calib-header">
+        <div>
+          <div id="calib-heading" class="calib-heading">序幕 · 入谷听风</div>
+          <div id="calib-sub" class="calib-sub">随山风校准你的拳架，完成四项起势即入回声拍</div>
+        </div>
+        <button id="btn-skip-warmup" class="btn-ghost btn-sm" type="button">跳过热身</button>
+      </div>
+      <div class="calib-steps" id="calib-steps">
+        <div class="calib-step" id="calib-step-1" data-step="slipLeft">
+          <span class="calib-seal" aria-hidden="true">一</span>
+          <span class="calib-text" id="calib-step-1-text">向左闪步 · 按 A 或 ←</span>
+        </div>
+        <div class="calib-step" id="calib-step-2" data-step="slipRight">
+          <span class="calib-seal" aria-hidden="true">二</span>
+          <span class="calib-text" id="calib-step-2-text">向右闪步 · 按 D 或 →</span>
+        </div>
+        <div class="calib-step" id="calib-step-3" data-step="punchPair">
+          <span class="calib-seal" aria-hidden="true">三</span>
+          <span class="calib-text" id="calib-step-3-text">刺拳直拳 · 按 J 与 K（或左右键）</span>
+        </div>
+        <div class="calib-step" id="calib-step-4" data-step="guardHold">
+          <span class="calib-seal" aria-hidden="true">四</span>
+          <span class="calib-text" id="calib-step-4-text">双臂抱架 · 长按 Space 守住中线</span>
+          <span class="calib-guard-progress"><span id="calib-guard-fill"></span></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Second Wind Breathing Banner (Non-blocking R1/R2 recovery) -->
+    <div id="second-wind-banner" class="second-wind-banner hidden" role="status" aria-live="assertive">
+      <div id="second-wind-title" class="sw-title">站起来!</div>
+      <div id="second-wind-count" class="sw-count">1</div>
+      <div id="second-wind-sub" class="sw-sub">稳住呼吸，重新立稳拳架</div>
+    </div>
+
+    <!-- Bottom Minimal Keycap Bar + Responsive Touch Controls -->
+    <footer id="bottom-bar" class="bottom-bar hidden">
+      <div id="controls-hint" class="controls-hint">
+        <span class="key-chip" data-key="slipLeft">
+          <kbd class="kbd">A</kbd><span class="key-sep">/</span><kbd class="kbd">←</kbd>
+          <span id="hint-slip-left">左闪</span>
+        </span>
+        <span class="key-chip" data-key="slipRight">
+          <kbd class="kbd">D</kbd><span class="key-sep">/</span><kbd class="kbd">→</kbd>
+          <span id="hint-slip-right">右闪</span>
+        </span>
+        <span class="key-chip" data-key="jab">
+          <kbd class="kbd">J</kbd><span class="key-sep">/</span><kbd class="kbd">LMB</kbd>
+          <span id="hint-jab">刺拳</span>
+        </span>
+        <span class="key-chip" data-key="cross">
+          <kbd class="kbd">K</kbd><span class="key-sep">/</span><kbd class="kbd">RMB</kbd>
+          <span id="hint-cross">直拳</span>
+        </span>
+        <span class="key-chip" data-key="guard">
+          <kbd class="kbd">Space</kbd>
+          <span id="hint-guard">抱架</span>
+        </span>
+      </div>
+
+      <div id="touch-controls" class="touch-controls">
+        <div class="touch-group">
+          <button class="touch-btn" id="btn-dodge-left" type="button">← 左闪</button>
+          <button class="touch-btn" id="btn-dodge-right" type="button">右闪 →</button>
+        </div>
+        <button class="touch-btn touch-guard" id="btn-guard" type="button">抱架</button>
+        <div class="touch-group">
+          <button class="touch-btn touch-punch" id="btn-punch-left" type="button">刺拳</button>
+          <button class="touch-btn touch-punch" id="btn-punch-right" type="button">直拳</button>
+        </div>
+      </div>
+    </footer>
+
+    <!-- OVERLAY 1: Prologue Exhibition Placard -->
+    <div id="prologue-overlay" class="overlay-backdrop">
+      <article class="placard-card">
+        <div class="placard-top">
+          <div class="placard-eyebrow" id="prologue-eyebrow">武道山集 · 数字交互展陈</div>
+          <div class="vertical-seal" id="prologue-seal" aria-hidden="true"><span>拳</span><span class="seal-dot">·</span><span class="seal-num">04</span></div>
+        </div>
+
+        <h1 class="placard-title" id="prologue-title">回声谷 · 拳击</h1>
+        <div class="placard-subtitle-en" id="prologue-subtitle-en">ECHO HOLLOW · BOXING</div>
+
+        <blockquote class="poetic-quote" id="prologue-quote">
+          拳风绕过山坳，在竹海里兜一圈再回来。
+        </blockquote>
+        <p class="placard-lead" id="prologue-lead">
+          四幕沉浸式拳击修行。先定架势，再听速度球回声拍，终与谷中拳师三回合对弈。
+        </p>
+
+        <div class="guide-grid">
+          <div class="guide-box">
+            <h2 id="guide-controls-title">身法与出拳</h2>
+            <ul id="guide-controls-list">
+              <li>A / ← ：向左闪步</li>
+              <li>D / → ：向右闪步</li>
+              <li>J / 左键 ：前手刺拳</li>
+              <li>K / 右键 ：后手直拳</li>
+              <li>Space (长按) ：双臂抱架</li>
+            </ul>
+          </div>
+          <div class="guide-box">
+            <h2 id="guide-rules-title">听劲要诀</h2>
+            <ul id="guide-rules-list">
+              <li>赭黄来拳：可长按抱架卸力，或闪步避锋</li>
+              <li>朱砂重钩：不可硬抗！按箭头反侧闪避</li>
+              <li>听劲·缓时：临面一瞬闪避，触发缓时破防重击</li>
+              <li>回声心流：决胜局末段气息无尽，力贯千钧</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="placard-actions">
+          <button id="btn-start" class="btn-primary" type="button">起势入谷</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- OVERLAY 2: Corner Rest Interlude Banner -->
+    <div id="rest-overlay" class="overlay-backdrop overlay-soft hidden">
+      <article class="rest-card">
+        <div class="rest-eyebrow" id="rest-eyebrow">局间调息</div>
+        <h2 class="rest-heading" id="rest-heading">一 · 距离与抱架</h2>
+        <p class="rest-body" id="rest-body"></p>
+        <div class="rest-recovery" id="rest-recovery">定力与气息已调息回复</div>
+        <div class="rest-footer">
+          <span class="rest-countdown" id="rest-countdown">6 秒后鸣钟入局</span>
+          <button id="btn-rest-ready" class="btn-primary btn-sm" type="button">提前出拳</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- OVERLAY 3: Pause Screen -->
+    <div id="pause-overlay" class="overlay-backdrop overlay-soft hidden">
+      <div class="pause-card">
+        <div class="vertical-seal seal-inline" aria-hidden="true">息</div>
+        <h2 id="paused-title" class="pause-title">静观暂歇</h2>
+        <p id="paused-sub" class="pause-sub">山风暂息，待你再续拳拍</p>
+      </div>
+    </div>
+
+    <!-- OVERLAY 4: Epilogue Echo Profile Card -->
+    <div id="epilogue-overlay" class="overlay-backdrop hidden">
+      <article class="placard-card epilogue-card">
+        <div class="placard-top">
+          <div class="placard-eyebrow" id="epilogue-eyebrow">回声谷 · 收拳印记</div>
+          <div class="vertical-seal" id="epilogue-seal" aria-hidden="true"><span>拳</span><span class="seal-dot">·</span><span class="seal-num">04</span></div>
+        </div>
+
+        <h2 id="epilogue-outcome" class="epilogue-outcome">三局功成 · 点数胜</h2>
+        <p id="epilogue-outcome-sub" class="epilogue-outcome-sub"></p>
+
+        <div class="archetype-box">
+          <div class="archetype-title" id="epilogue-arch-title">听风行者 · 灵动闪反</div>
+          <p class="archetype-desc" id="epilogue-arch-desc"></p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-cell">
+            <div class="stat-label" id="stat-label-rhythm">速度球合拍率</div>
+            <div class="stat-value" id="stat-rhythm">--</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label" id="stat-label-dodges">听劲·完美闪避</div>
+            <div class="stat-value" id="stat-perfect-dodges">0</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label" id="stat-label-combo">最高连击</div>
+            <div class="stat-value" id="stat-max-combo">0</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label" id="stat-label-blocks">沉稳抱架</div>
+            <div class="stat-value" id="stat-blocks">0</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label" id="stat-label-breaks">破势次数</div>
+            <div class="stat-value" id="stat-breaks">0</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label" id="stat-label-duration">入谷历时</div>
+            <div class="stat-value" id="stat-duration">00:00</div>
+          </div>
+        </div>
+
+        <div class="epilogue-actions">
+          <button id="btn-replay" class="btn-primary" type="button">再入回声谷</button>
+          <button id="btn-back" class="btn-ghost" type="button">返回篇章</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- Subtle Toast Feedback -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+  </div>
+
+  <!-- Classic Scripts (file:// safe, zero external dependencies) -->
+  <script src="./i18n.js"></script>
+  <script src="./bridge.js"></script>
+  <script src="./audio.js"></script>
+  <script src="./renderer.js"></script>
+  <script src="./engine.js"></script>
+</body>
+</html>

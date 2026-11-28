@@ -80,6 +80,7 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     expect(document.activeElement).toBe(screen.getByRole('button', { name: '进入相扑' }));
   });
   it('walks through the boxing shots and lets an unavailable game return to strength', async () => {
+    arenaExperiences.boxing.entry = null;
     await open();
     fireEvent.keyDown(window, { key: '4' });
     act(() => renderer.props!.onArrive('boxing'));

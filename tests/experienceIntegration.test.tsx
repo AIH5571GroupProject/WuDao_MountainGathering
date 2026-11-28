@@ -15,7 +15,7 @@ describe('collaborative experience integration', () => {
     for (const [id, definition] of Object.entries(arenaExperiences)) {
       expect(definition.id).toBe(id);
       if (id === 'sumo') expect(definition.entry).toMatchObject({ kind: 'react' });
-      else if (id === 'taekwondo') expect(definition.entry).toMatchObject({ kind: 'iframe' });
+      else if (id === 'taekwondo' || id === 'boxing' || id === 'shaolin') expect(definition.entry).toMatchObject({ kind: 'iframe' });
       else expect(definition.entry).toBeNull();
       expect(definition.title.en).toBeTruthy();
     }

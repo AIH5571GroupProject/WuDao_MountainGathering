@@ -5,6 +5,6 @@ const experience: ArenaExperience = {
   assets: { sceneUrl: null, actorUrl: null, filmUrl: null, ambientAudio: null, stageAudio: null },
   // React: { kind: 'react', load: () => import('./Experience') }
   // Standalone: { kind: 'iframe', src: 'experiences/shaolin/index.html' }
-  entry: null,
+  entry: { kind: 'iframe', src: 'experiences/shaolin/index.html' },
 };
 export default experience;
