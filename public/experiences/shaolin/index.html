@@ -3,12 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#e9ecdf">
+<meta name="theme-color" content="#EFEFE6">
 <title>少林功夫 · Shaolin Kung Fu</title>
 <style>
 :root{
-  --paper:#e9ecdf;--paper-2:#f3f0e2;--ink:#253422;--muted:#6c7a63;
-  --matcha:#52654a;--seal:#a25c49;--verm:#b8432e;--line:rgba(37,52,34,.24);
+  --paper:#EFEFE6;--paper-2:#F6F4EC;--ink:#232822;--muted:#677063;
+  --matcha:#5D7A63;--seal:#9E4B3B;--verm:#A84232;--fog-red:#7D342E;--gold:#B8923A;
+  --morandi-sage:#8E9E8B;--morandi-clay:#C7B8A1;--morandi-mist:#D5D4C8;--morandi-slate:#5B635A;
+  --line:rgba(35,40,34,.22);
+  --mono:'JetBrains Mono','Fira Code','SFMono-Regular',Consolas,'Courier New',monospace;
   --serif:'Noto Serif SC','Songti SC','STSong',Georgia,serif;
   --kai:'Kaiti SC','STKaiti','KaiTi',var(--serif);
   --song:'Songti SC','STSong','SimSun',serif;
@@ -20,249 +23,467 @@ body{
   display:grid;grid-template-rows:64px minmax(0,1fr) 30px;overflow:hidden;
 }
 button{color:inherit;font:inherit;cursor:pointer}
-button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--seal);outline-offset:4px}
-.crt{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.5;
-  background:repeating-linear-gradient(0deg,rgba(34,50,39,.09) 0 1px,transparent 1px 3px),
-             repeating-linear-gradient(90deg,rgba(103,119,81,.03) 0 1px,transparent 1px 3px),
-             radial-gradient(ellipse at 50% 47%,transparent 56%,rgba(41,63,43,.1) 100%)}
-.grain{position:fixed;inset:0;z-index:98;pointer-events:none;opacity:.12;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.83' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E")}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--seal);outline-offset:3px}
+.crt{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.34;
+  background:repeating-linear-gradient(0deg,rgba(35,40,34,.06) 0 1px,transparent 1px 3px),
+             radial-gradient(ellipse at 50% 47%,transparent 58%,rgba(35,40,34,.08) 100%)}
+.grain{position:fixed;inset:0;z-index:98;pointer-events:none;opacity:.22;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E")}
 
 /* top bar */
-.top{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 26px;border-bottom:1px solid var(--line);background:rgba(233,236,223,.94)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 26px;border-bottom:1px solid var(--line);background:rgba(239,239,230,.94)}
 .brand{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
 .brand b{font:400 16px/1 var(--serif);letter-spacing:.18em}
-.brand small{font:10px 'Cormorant Garamond',Georgia,serif;letter-spacing:.2em;color:var(--muted)}
+.brand small{font:10px var(--mono);letter-spacing:.18em;color:var(--muted)}
 .nav{display:flex;align-items:stretch;height:100%;gap:2px}
 .nav button{border:0;background:none;padding:0 15px;position:relative;font-size:12px;letter-spacing:.1em;color:var(--muted)}
-.nav button i{font:11px 'Cormorant Garamond',Georgia,serif;margin-right:8px;opacity:.7}
+.nav button i{font:11px var(--mono);margin-right:8px;opacity:.75}
 .nav button:hover{color:var(--ink)}
 .nav button.active{color:var(--seal)}
 .nav button.active:after{content:'';position:absolute;left:14px;right:14px;bottom:0;height:2px;background:var(--seal)}
 .tools{display:flex;align-items:center;gap:14px;white-space:nowrap}
-.lang-chip{font:10px 'Cormorant Garamond',Georgia,serif;letter-spacing:.16em;color:var(--muted);border:1px solid var(--line);padding:5px 8px}
-.ghost-btn{background:none;border:1px solid var(--line);padding:8px 13px;font-size:11px;letter-spacing:.08em}
-.ghost-btn:hover{border-color:var(--seal);color:var(--seal)}
+.lang-chip{font:10px var(--mono);letter-spacing:.14em;color:var(--muted);border:1px solid var(--line);padding:5px 8px}
+.ghost-btn{background:none;border:1.5px solid #232822;padding:7px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;background:var(--paper-2)}
+.ghost-btn:hover{background:#232822;color:#EFEFE6}
 
 main{position:relative;min-height:0;overflow:auto}
 .panel{display:none;min-height:100%;padding:clamp(18px,3.2vw,42px) clamp(18px,5vw,74px) 46px;animation:rise .38s ease-out}
 .panel.active{display:block}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.kicker{margin:0;color:var(--muted);font:10px 'Cormorant Garamond',Georgia,serif;letter-spacing:.3em;text-transform:uppercase}
+.kicker{margin:0;color:var(--muted);font:10px var(--mono);letter-spacing:.26em;text-transform:uppercase}
 .panel h1{margin:10px 0 8px;font-weight:400;font-size:clamp(22px,2.5vw,34px);letter-spacing:.14em;line-height:1.45}
-.lead{margin:0 0 22px;max-width:76ch;color:#5b6753;font-size:12px;line-height:2.05}
+.lead{margin:0 0 22px;max-width:76ch;color:#555e50;font-size:12px;line-height:2.05}
 .rule{width:54px;height:1px;background:var(--seal);opacity:.7;margin:18px 0}
 
 /* 01 · narrative */
 .narrative-stage{position:relative;margin:28px auto 22px;max-width:1080px;min-height:clamp(250px,42vh,390px);
-  border:1px solid var(--line);background:linear-gradient(145deg,rgba(243,240,226,.9),rgba(225,227,207,.65));
-  box-shadow:0 18px 44px rgba(37,52,34,.09);overflow:hidden;touch-action:none;cursor:ew-resize;user-select:none}
-.narrative-stage:before{content:'';position:absolute;inset:12px;border:1px solid rgba(37,52,34,.08);pointer-events:none}
+  border:1px solid var(--line);background:linear-gradient(145deg,rgba(246,244,236,.92),rgba(229,227,214,.7));
+  box-shadow:0 18px 44px rgba(35,40,34,.09);overflow:hidden;touch-action:none;cursor:ew-resize;user-select:none}
+.narrative-stage:before{content:'';position:absolute;inset:12px;border:1px solid rgba(35,40,34,.08);pointer-events:none}
 .stage-hint{position:absolute;top:14px;left:18px;z-index:6;font-size:10px;letter-spacing:.18em;color:var(--muted)}
-.stage-count{position:absolute;top:14px;right:18px;z-index:6;font:11px 'Cormorant Garamond',Georgia,serif;letter-spacing:.14em;color:var(--muted)}
+.stage-count{position:absolute;top:14px;right:18px;z-index:6;font:11px var(--mono);letter-spacing:.14em;color:var(--muted)}
 .layer{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;padding:0 clamp(16px,5vw,68px);pointer-events:none}
-.layer-base{font-family:var(--song);font-size:clamp(24px,3.6vw,48px);letter-spacing:.16em;color:#7e8572;line-height:1.6;
-  text-shadow:2px 1px 0 rgba(37,52,34,.08);transform:translateY(calc(-50% + 2px)) translateX(var(--shift,0px))}
+.layer-base{font-family:var(--song);font-size:clamp(24px,3.6vw,48px);letter-spacing:.16em;color:#767e6d;line-height:1.6;
+  text-shadow:2px 1px 0 rgba(35,40,34,.08);transform:translateY(calc(-50% + 2px)) translateX(var(--shift,0px))}
 .layer-film{font-family:var(--kai);font-weight:700;font-size:clamp(24px,3.6vw,48px);letter-spacing:.08em;color:var(--seal);
-  text-shadow:3px 2px 0 rgba(37,52,34,.09);transform:translateY(calc(-50% - 2px)) translateX(var(--shift,0px))}
-.layer-film small{display:block;margin-top:12px;font-family:var(--serif);font-weight:400;font-size:clamp(10px,1.2vw,14px);letter-spacing:.1em;color:#6d6249}
+  text-shadow:3px 2px 0 rgba(35,40,34,.09);transform:translateY(calc(-50% - 2px)) translateX(var(--shift,0px))}
+.layer-film small{display:block;margin-top:12px;font-family:var(--serif);font-weight:400;font-size:clamp(10px,1.2vw,14px);letter-spacing:.1em;color:#665c46}
 .layer-danmu{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;transform:translateY(calc(-50% + 62px))}
-.layer-danmu span{font-family:var(--song);font-size:clamp(12px,1.6vw,19px);letter-spacing:.08em;color:rgba(37,52,34,.72);
-  background:rgba(243,240,226,.58);border:1px solid rgba(37,52,34,.12);padding:3px 10px}
+.layer-danmu span{font-family:var(--song);font-size:clamp(12px,1.6vw,19px);letter-spacing:.08em;color:rgba(35,40,34,.72);
+  background:rgba(246,244,236,.62);border:1px solid rgba(35,40,34,.12);padding:3px 10px}
 .fragment{position:absolute;left:8%;right:8%;bottom:16%;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
-  font-family:var(--song);font-size:clamp(9px,1.05vw,12px);letter-spacing:.1em;color:#6d7464}
-.fragment span{border-bottom:1px dashed rgba(37,52,34,.22)}
+  font-family:var(--song);font-size:clamp(9px,1.05vw,12px);letter-spacing:.1em;color:#666d5e}
+.fragment span{border-bottom:1px dashed rgba(35,40,34,.22)}
 .scrub{position:absolute;left:0;bottom:0;height:3px;background:var(--seal);width:0;transition:width .2s ease}
 .narrative-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;max-width:1080px;margin:0 auto}
-.note{padding:16px 18px;border:1px solid var(--line);background:rgba(243,240,226,.7);font-size:12px;line-height:1.95;color:#55614f;
+.note{padding:16px 18px;border:1px solid var(--line);background:rgba(246,244,236,.74);font-size:12px;line-height:1.95;color:#525b4d;
   opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
 .note.show{opacity:1;transform:none}
 .note h3{margin:0 0 6px;font-weight:400;font-size:13px;letter-spacing:.12em;color:var(--seal)}
 .note.en h3,.note.en p{font-family:Georgia,var(--serif)}
-.caveat{max-width:1080px;margin:18px auto 0;padding:14px 18px;border-left:2px solid rgba(37,52,34,.2);
-  background:rgba(37,52,34,.045);font-size:11px;line-height:1.9;color:#5f6a57}
+.caveat{max-width:1080px;margin:18px auto 0;padding:14px 18px;border-left:2px solid rgba(35,40,34,.2);
+  background:rgba(35,40,34,.045);font-size:11px;line-height:1.9;color:#596353}
 .caveat b{color:var(--ink);font-weight:500}
 details.sources{max-width:1080px;margin:12px auto 0;font-size:11px;line-height:1.9;color:var(--muted)}
 details.sources summary{cursor:pointer;letter-spacing:.1em;color:var(--seal)}
 details.sources p{margin:8px 0 0;font-family:Georgia,var(--serif)}
 
 /* 02 · anatomy */
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 24px}
-.tabs button{width:clamp(88px,11vw,132px);padding:10px 6px 8px;border:1px solid var(--line);background:rgba(243,240,226,.65);
-  display:flex;flex-direction:column;align-items:center;gap:5px;transition:background .25s,border-color .25s,color .25s}
-.tabs button svg{width:42px;height:52px;overflow:visible}
-.tab-boy{width:42px;height:52px;overflow:visible}
-.card-boy{width:38px;height:44px;overflow:visible}
-.tabs button span{font-size:11px;letter-spacing:.06em}
-.tabs button small{font:9px 'Cormorant Garamond',Georgia,serif;letter-spacing:.06em;opacity:.65}
-.tabs button:hover{border-color:var(--seal)}
-.tabs button.active{background:var(--ink);border-color:var(--ink);color:var(--paper);box-shadow:0 8px 22px rgba(37,52,34,.18)}
-.anatomy-grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(260px,.9fr);gap:clamp(16px,3vw,44px);align-items:start;max-width:1120px;margin:0 auto}
-.figure-wrap{position:relative;aspect-ratio:1/1.08;border:1px solid var(--line);background:
-  linear-gradient(rgba(37,52,34,.045) 1px,transparent 1px) 0 0/100% 10%,
-  linear-gradient(90deg,rgba(37,52,34,.045) 1px,transparent 1px) 0 0/10% 100%,
-  radial-gradient(circle at 48% 34%,#f6f3e9,#e2e5d4);overflow:hidden}
-.figure-wrap:after{content:'';position:absolute;inset:10px;border:1px solid rgba(37,52,34,.1);pointer-events:none}
-.figure-svg{position:absolute;inset:0;width:100%;height:100%}
-.figure-svg .body{fill:none;stroke:rgba(37,52,34,.22);stroke-width:13;stroke-linecap:round;stroke-linejoin:round}
-.figure-svg .bone{fill:none;stroke:#687565;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.figure-svg .force{fill:none;stroke:var(--verm);stroke-width:2.1;stroke-dasharray:6 5;stroke-linecap:round;marker-end:url(#arrow);opacity:.95}
-.figure-svg .staff{stroke:#7c7359;stroke-width:4;stroke-linecap:round}
-.figure-svg .ground{stroke:rgba(37,52,34,.32);stroke-width:1;stroke-dasharray:3 6}
-/* 水墨少林小子 · ink-wash vector character */
-.boy-head{fill:#e6e2cf;stroke:#2f372c;stroke-width:1.5}
-.boy-ear{fill:#ded9c4;stroke:#2f372c;stroke-width:1.2}
-.boy-eye{fill:#f4f1e2;stroke:#2f372c;stroke-width:1}
-.boy-pupil{fill:#1c241a}
-.boy-brow{fill:none;stroke:#1c241a;stroke-width:2.5;stroke-linecap:round}
-.boy-mouth{fill:none;stroke:#4c5244;stroke-width:1.1;stroke-linecap:round}
-.boy-scar{fill:#2f372c;opacity:.8}
-.boy-robe{fill:#d6d3bf;stroke:#2f372c;stroke-width:1.5;stroke-linejoin:round}
-.boy-robe-dark{fill:#bdb9a3;stroke:#2f372c;stroke-width:1.1}
-.boy-collar{fill:none;stroke:#2f372c;stroke-width:1.3;stroke-linecap:round}
-.boy-sash{fill:#60654f;stroke:#2f372c;stroke-width:.8}
-.boy-beads{fill:#454a3b;stroke:#2f372c;stroke-width:.4}
-.boy-guard{fill:#9a9b88;stroke:#2f372c;stroke-width:.9}
-.boy-pants{fill:none;stroke:#9b9c88;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
-.boy-wrap{fill:none;stroke:#c0c0ac;stroke-width:5;stroke-linecap:round}
-.boy-shoe{fill:#2f372c;stroke:#1c241a;stroke-width:.8}
-.boy-hand{fill:#e6e2cf;stroke:#2f372c;stroke-width:1}
-.boy-ink{fill:none;stroke:#2f372c;stroke-width:.75;stroke-linecap:round;opacity:.5}
-.boy-splash{fill:#2f372c;opacity:.28}
-.boy-staff{stroke:#4a4b3d;stroke-width:3.4;stroke-linecap:round}
-.boy-patch{fill:#c98b2c;stroke:#6d4a25;stroke-width:.8;stroke-dasharray:1.4 1.2}
-.boy-staff{stroke:#7c5a32;stroke-width:3.4;stroke-linecap:round}
-.hotspot{position:absolute;width:25px;height:25px;margin:-12.5px 0 0 -12.5px;border-radius:50%;border:1px solid var(--verm);
-  background:rgba(243,240,226,.92);color:var(--verm);font:10px 'Cormorant Garamond',Georgia,serif;display:grid;place-items:center;
-  box-shadow:0 2px 8px rgba(37,52,34,.16);transition:transform .2s,background .2s,color .2s}
-.hotspot:hover,.hotspot.active{transform:scale(1.18);background:var(--verm);color:#f5f1e4}
-.figure-legend{position:absolute;left:14px;bottom:12px;z-index:2;font-size:10px;letter-spacing:.08em;color:var(--muted)}
-.figure-legend i{display:inline-block;width:20px;border-top:2px dashed var(--verm);vertical-align:middle;margin-right:6px}
+.anatomy-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 18px;max-width:1160px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.tabs button{width:clamp(94px,11.5vw,138px);padding:9px 6px 8px;border:1.5px solid #232822;background:rgba(246,244,236,.78);
+  box-shadow:2px 2px 0 #232822;display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:background .2s,border-color .2s,color .2s,transform .15s,box-shadow .15s}
+.tabs button svg{width:40px;height:48px;overflow:visible}
+.tab-boy{width:40px;height:48px;overflow:visible}
+.tabs button span{font-size:11px;letter-spacing:.05em;font-weight:600}
+.tabs button small{font:700 9px var(--mono);letter-spacing:.06em;opacity:.75}
+.tabs button:hover{border-color:var(--seal);transform:translate(-1px,-1px);box-shadow:3px 3px 0 #232822}
+.tabs button.active{background:#232822;border-color:#232822;color:#EFEFE6;box-shadow:2px 2px 0 var(--seal)}
+.loop-meta{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:#454F41}
+.drill-tag{border:1.5px solid #232822;background:rgba(246,244,236,.92);padding:4px 8px;font-weight:700}
+
+.anatomy-grid{display:grid;grid-template-columns:minmax(290px,1.06fr) minmax(270px,.94fr);gap:clamp(16px,3vw,42px);align-items:start;max-width:1160px;margin:0 auto}
+/* 皮影灯箱影窗背景 */
+.figure-wrap{position:relative;aspect-ratio:1/1.08;border:2px solid #232822;box-shadow:4px 4px 0 rgba(35,40,34,.18);
+  background:
+    linear-gradient(rgba(138,94,36,.065) 1px,transparent 1px) 0 0/10% 10%,
+    linear-gradient(90deg,rgba(138,94,36,.065) 1px,transparent 1px) 0 0/10% 10%,
+    radial-gradient(circle at 50% 44%,#FFF9E6 0%,#F5E9CA 54%,#DFCFA6 100%);
+  overflow:hidden}
+.figure-wrap:after{content:'';position:absolute;inset:9px;border:1.5px solid rgba(92,58,24,.28);pointer-events:none}
+.figure-hud{position:absolute;top:12px;left:14px;right:14px;z-index:3;display:flex;justify-content:space-between;gap:8px;
+  pointer-events:none;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;color:#454F41}
+.figure-hud b{background:rgba(246,244,236,.88);border:1px solid rgba(35,40,34,.25);padding:2px 6px;font-weight:700}
+
+.media-slot{position:absolute;inset:0;z-index:1;display:none;pointer-events:none}
+.media-slot.active{display:block}
+.media-slot video{width:100%;height:100%;object-fit:contain}
+
+.figure-svg{position:relative;z-index:2;width:100%;height:100%;overflow:visible;transform-origin:50% 82%}
+.figure-svg.loop-luohan{animation:loop-luohan 3s cubic-bezier(.42,0,.58,1) infinite}
+@keyframes loop-luohan{
+  0%,100%{transform:translateY(0px) scale(1,1)}
+  25%{transform:translateY(5px) scale(1.025,.972)}
+  50%{transform:translateY(8px) scale(1.035,.96)}
+  75%{transform:translateY(3px) scale(1.012,.986)}
+}
+.figure-svg.loop-staff{animation:loop-staff 2.5s cubic-bezier(.42,0,.58,1) infinite}
+@keyframes loop-staff{
+  0%,100%{transform:translate(0px,0px) rotate(0deg)}
+  22%{transform:translate(-4px,-4px) rotate(-3.5deg)}
+  52%{transform:translate(6px,4px) rotate(4.2deg)}
+  78%{transform:translate(2px,1px) rotate(1.2deg)}
+}
+.figure-svg.loop-finger{animation:loop-finger 4s ease-in-out infinite}
+@keyframes loop-finger{
+  0%,100%{transform:translateY(0px) scale(1,1)}
+  35%{transform:translateY(1.8px) scale(1.008,.994)}
+  65%{transform:translateY(-1.5px) scale(.996,1.005)}
+}
+.figure-svg.loop-palm{animation:loop-palm 3s cubic-bezier(.42,0,.58,1) infinite}
+@keyframes loop-palm{
+  0%,100%{transform:translate(0px,0px) scale(1,1)}
+  30%{transform:translate(-5px,2px) scale(.99,1.008)}
+  58%{transform:translate(6px,0px) scale(1.024,.986)}
+  82%{transform:translate(2px,0px) scale(1.006,.996)}
+}
+.figure-svg.loop-seated{animation:loop-seated 5s ease-in-out infinite}
+@keyframes loop-seated{
+  0%,100%{transform:translateY(0px) scale(1,1)}
+  50%{transform:translateY(-2.4px) scale(1.012,.992)}
+}
+.finger-tremor{transform-box:fill-box;transform-origin:center}
+.loop-finger .finger-tremor{animation:finger-micro-tremor .18s ease-in-out infinite}
+@keyframes finger-micro-tremor{
+  0%,100%{transform:translate(0px,0px)}
+  25%{transform:translate(1.2px,-.9px)}
+  50%{transform:translate(-.9px,1.1px)}
+  75%{transform:translate(1px,.8px)}
+}
+.zen-halo{opacity:0;pointer-events:none;transition:opacity .35s ease}
+.zen-halo.active{opacity:1}
+.zen-halo-ring{fill:none;stroke:#B8923A;stroke-width:2.2;opacity:.45;transform-box:fill-box;transform-origin:center;
+  animation:gold-halo 5s ease-in-out infinite}
+@keyframes gold-halo{
+  0%,100%{transform:scale(.94);opacity:.25}
+  50%{transform:scale(1.08);opacity:.65}
+}
+.figure-svg .force{
+  fill:none;stroke:#A84232;stroke-width:2.35;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:6 5;opacity:.96;animation:force-ants 1.05s linear infinite;
+}
+.figure-svg .force-glow{
+  fill:none;stroke:#C76B59;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:14 26;opacity:.45;animation:force-flow 1.35s linear infinite;
+}
+@keyframes force-ants{to{stroke-dashoffset:-22}}
+@keyframes force-flow{to{stroke-dashoffset:-40}}
+.figure-svg .ground{stroke:rgba(35,40,34,.38);stroke-width:1.2;stroke-dasharray:3 5}
+
+/* 皮影戏样式（镂空牛皮 · 熟漆描边 · 黄铜铆钉关节 · 操纵竹签） */
+.piying-figure{filter:drop-shadow(2.5px 3.5px 2px rgba(48,28,12,.26))}
+.piying-rod{stroke:#4F351B;stroke-width:.75;stroke-dasharray:1.8 1.4;opacity:.68}
+.piying-rod-tip{fill:#C8963E;stroke:#24180E;stroke-width:.6}
+.piying-skin{fill:#E8B974;fill-opacity:.93;stroke:#24180E;stroke-width:1.75;stroke-linejoin:round}
+.piying-skin-dark{fill:#D39B52;fill-opacity:.92;stroke:#24180E;stroke-width:1.45}
+.piying-eye{fill:#FFF9E4;stroke:#24180E;stroke-width:1.15}
+.piying-pupil{fill:#1E130A}
+.piying-brow{fill:none;stroke:#1E130A;stroke-width:2.35;stroke-linecap:round}
+.piying-mouth{fill:none;stroke:#6D2B1D;stroke-width:1.3;stroke-linecap:round}
+.piying-scar{fill:#24180E;stroke:#FFF4D6;stroke-width:.28;opacity:.92}
+.piying-robe{fill:#C96E34;fill-opacity:.88;stroke:#24180E;stroke-width:1.85;stroke-linejoin:round}
+.piying-robe-trim{fill:none;stroke:#24180E;stroke-width:1.25;stroke-linecap:round}
+.piying-cutout{fill:#F8EED1;fill-opacity:.86;stroke:#24180E;stroke-width:.95}
+.piying-sash{fill:#8F2E22;fill-opacity:.92;stroke:#24180E;stroke-width:1.4;stroke-linejoin:round}
+.piying-beads{fill:#5C2816;stroke:#E8B974;stroke-width:.45}
+.piying-sleeve{fill:#B85B28;fill-opacity:.88;stroke:#24180E;stroke-width:1.5;stroke-linejoin:round}
+.piying-guard{fill:#5E6F57;fill-opacity:.92;stroke:#24180E;stroke-width:1.3;stroke-linejoin:round}
+.piying-pants{fill:#546752;fill-opacity:.88;stroke:#24180E;stroke-width:1.55;stroke-linejoin:round}
+.piying-wrap{fill:#DFBE86;fill-opacity:.9;stroke:#24180E;stroke-width:1.25;stroke-linejoin:round}
+.piying-shoe{fill:#24180E;stroke:#C8963E;stroke-width:.85}
+.piying-hand{fill:#E8B974;fill-opacity:.95;stroke:#24180E;stroke-width:1.4}
+.piying-joint{fill:#D6A449;stroke:#24180E;stroke-width:1}
+.piying-joint-core{fill:#24180E}
+.piying-ink{fill:none;stroke:#24180E;stroke-width:1.25;stroke-linecap:round}
+.piying-staff{stroke:#3B2210;stroke-width:4.2;stroke-linecap:round}
+.piying-staff-core{stroke:#B97A3D;stroke-width:1.5;stroke-linecap:round;stroke-dasharray:6 3}
+
+.hotspot{position:absolute;width:25px;height:25px;margin:-12.5px 0 0 -12.5px;border-radius:50%;
+  border:1.6px solid #232822;background:rgba(246,244,236,.95);color:#232822;
+  font:700 10px var(--mono);display:grid;place-items:center;z-index:4;
+  box-shadow:2px 2px 0 #232822;transition:transform .18s,background .18s,color .18s,border-color .18s}
+.hotspot.strike-point{border-color:#A84232;color:#A84232;animation:node-blink 1.2s ease-in-out infinite}
+.hotspot.zen-point{border-color:#9C7818;color:#7D5E10;background:#FFF9E2;animation:zen-node-pulse 2.5s ease-in-out infinite}
+@keyframes node-blink{
+  0%,100%{transform:scale(1);box-shadow:2px 2px 0 #A84232;background:rgba(246,244,236,.96)}
+  50%{transform:scale(1.24);box-shadow:0 0 0 4px rgba(168,66,50,.22);background:#F8E7E3}
+}
+@keyframes zen-node-pulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(184,146,58,.35)}
+  50%{transform:scale(1.16);box-shadow:0 0 0 5px rgba(184,146,58,.12)}
+}
+.hotspot:hover,.hotspot.active{transform:scale(1.22);background:#A84232;border-color:#232822;color:#FFF9F7;animation:none}
+.hotspot.zen-point.active{background:#9C7818;border-color:#232822;color:#FFFDF5;animation:none}
+
+.figure-legend{position:absolute;left:14px;bottom:12px;z-index:3;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:#454F41;background:rgba(246,244,236,.88);
+  border:1px solid rgba(35,40,34,.22);padding:3px 8px}
+.figure-legend i{display:inline-block;width:18px;border-top:2px dashed #A84232;vertical-align:middle;margin-right:4px}
+.figure-legend i.gold-leg{border-top-style:solid;border-top-color:#B8923A;border-top-width:2.5px}
+
 .anatomy-info h2{margin:4px 0 4px;font-weight:400;font-size:clamp(20px,2.2vw,28px);letter-spacing:.12em}
-.anatomy-info .sub{margin:0 0 18px;color:var(--muted);font:11px 'Cormorant Garamond',Georgia,serif;letter-spacing:.16em}
-.annotation{border:1px solid var(--line);background:rgba(246,243,231,.86);padding:18px 20px;min-height:204px;max-height:min(58vh,520px);overflow-y:auto;box-shadow:0 10px 30px rgba(37,52,34,.06)}
+.anatomy-info .sub{margin:0 0 14px;color:var(--muted);font:11px var(--mono);letter-spacing:.12em}
+.rhythm-strip{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;font-family:var(--mono);font-size:10px}
+.rhythm-chip{border:1px solid #232822;background:rgba(246,244,236,.85);padding:3px 8px;color:#232822}
+.annotation{border:1.5px solid #232822;background:rgba(246,244,236,.92);box-shadow:3px 3px 0 rgba(35,40,34,.14);
+  padding:18px 20px;min-height:204px;max-height:min(58vh,520px);overflow-y:auto}
 .annotation .placeholder{margin:0;color:var(--muted);font-size:12px;line-height:2}
 .annotation h3{margin:0 0 8px;font-weight:400;font-size:17px;letter-spacing:.1em;color:var(--verm)}
-.annotation .ann-group{padding:9px 0;border-top:1px dashed rgba(37,52,34,.16)}
+.annotation .ann-group{padding:9px 0;border-top:1px dashed rgba(35,40,34,.18)}
 .annotation .ann-group:first-of-type{border-top:0}
-.annotation .tag{font-size:10px;letter-spacing:.16em;color:var(--seal)}
+.annotation .tag{font:700 10px var(--mono);letter-spacing:.14em;color:var(--seal)}
 .annotation dl{margin:6px 0 0;display:grid;gap:9px}
-.annotation dt{font-size:10px;letter-spacing:.14em;color:var(--muted)}
-.annotation dd{margin:2px 0 0;font-size:11.5px;line-height:1.85;color:#485542}
-.disclaimer{grid-column:1/-1;max-width:1120px;margin:0;color:var(--muted);font-size:10px;line-height:1.8}
+.annotation dt{font:700 10px var(--mono);letter-spacing:.12em;color:var(--muted)}
+.annotation dd{margin:2px 0 0;font-size:11.5px;line-height:1.85;color:#454f41}
+.disclaimer{grid-column:1/-1;max-width:1160px;margin:0;color:var(--muted);font-size:10px;line-height:1.8}
 
-/* 03 · arena — game-style dohyo */
-.arena-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,.8fr);gap:clamp(16px,3vw,36px);max-width:1180px;margin:0 auto;align-items:start}
-.arena-stage{position:relative;min-height:clamp(370px,55vh,530px);border:1px solid var(--line);overflow:hidden;
-  background:radial-gradient(ellipse at 50% 80%,rgba(120,140,100,.35),transparent 60%),linear-gradient(#eef0e3,#dce2cd)}
-.arena-stage.shake{animation:stage-shake .5s ease}
-@keyframes stage-shake{0%,100%{transform:translate(0)}25%{transform:translate(-7px,3px)}50%{transform:translate(6px,-3px)}75%{transform:translate(-4px,2px)}}
-.speedlines{position:absolute;inset:-40%;pointer-events:none;z-index:0;opacity:0;transition:opacity .6s;
-  background:repeating-conic-gradient(from 0deg at 50% 72%,rgba(37,52,34,.11) 0deg 1.2deg,transparent 1.2deg 7deg);
-  -webkit-mask-image:radial-gradient(circle at 50% 72%,transparent 14%,#000 40%,transparent 76%);
-  mask-image:radial-gradient(circle at 50% 72%,transparent 14%,#000 40%,transparent 76%)}
-.arena-stage.charge .speedlines{opacity:.85}
-.hud{position:absolute;left:0;right:0;top:0;z-index:6;display:flex;align-items:center;gap:12px;flex-wrap:nowrap;
-  padding:7px 14px 8px;background:rgba(233,236,223,.93);border-bottom:1px solid var(--line);font-size:10px;color:var(--muted)}
-.hud-round{letter-spacing:.08em;color:var(--ink);white-space:nowrap}
-.hud-round b{font:16px 'Cormorant Garamond',Georgia,serif;color:var(--seal);margin:0 2px}
-.hud-gauge{display:flex;align-items:center;gap:6px;min-width:104px;flex:1;white-space:nowrap}
-.gauge{flex:1;height:6px;background:rgba(37,52,34,.14);border:1px solid rgba(37,52,34,.2);overflow:hidden}
-.gauge i{display:block;height:100%;background:var(--seal);transition:width .7s cubic-bezier(.2,.8,.2,1)}
-.demon-status{position:absolute;right:5%;top:34%;z-index:6;display:flex;flex-direction:column;gap:5px;
-  width:clamp(118px,22%,180px);padding:6px 9px;background:rgba(233,236,223,.92);
-  border:1px solid var(--line);box-shadow:0 4px 14px rgba(37,52,34,.12);
-  font-size:10px;letter-spacing:.12em;color:var(--muted)}
-.demon-status .gauge{width:100%;flex:none}
-.demon-status .gauge i{background:#4c4a46}
-.arena-label{position:absolute;top:46px;left:18px;font:10px 'Cormorant Garamond',Georgia,serif;letter-spacing:.24em;color:var(--muted);z-index:2}
-.strike-banner{position:absolute;left:50%;top:48px;transform:translate(-50%,-14px) scale(.85);z-index:7;min-width:min(70%,300px);
-  padding:7px 22px 9px;background:var(--seal);color:#f8f3e6;text-align:center;border:1px solid #7d2f1f;
-  box-shadow:0 8px 24px rgba(37,52,34,.24);opacity:0;pointer-events:none;transition:opacity .3s}
-.strike-banner.show{opacity:1;animation:banner-in .55s cubic-bezier(.2,1.35,.3,1) both}
-.strike-banner b{display:block;font-size:clamp(17px,2.5vw,27px);letter-spacing:.16em;font-weight:700;line-height:1.3}
-.strike-banner small{display:block;font-size:10px;letter-spacing:.1em;opacity:.85;margin-top:2px}
-@keyframes banner-in{0%{opacity:0;transform:translate(-50%,-20px) scale(.82)}60%{opacity:1;transform:translate(-50%,5px) scale(1.05)}100%{transform:translate(-50%,0) scale(1)}}
-.dohyo{position:absolute;left:50%;bottom:6%;transform:translateX(-50%) perspective(620px) rotateX(56deg);z-index:1;
-  width:min(74%,540px);height:min(30%,160px);border-radius:50%;border:9px solid #c8b586;
-  background:radial-gradient(ellipse at 50% 38%,#e9e1c7,#cabd94);box-shadow:0 16px 28px rgba(37,52,34,.22),inset 0 0 0 2px rgba(37,52,34,.12)}
-.dohyo-inner{position:absolute;inset:11px;border-radius:50%;border:1px dashed rgba(37,52,34,.26)}
-.fighter{position:absolute;left:12%;bottom:14%;width:clamp(136px,18vw,214px);height:clamp(136px,18vw,214px);transform-origin:50% 90%;z-index:4}
+/* ==========================================================================
+   03 · 少林小子擂台战 (皮影戏风格 · 粗黑描边 · 浅米色纸张纹理 · 莫兰迪 · Monospace)
+   ========================================================================== */
+.arena-shell{max-width:1140px;margin:0 auto;font-family:var(--mono)}
+.arena-stage{
+  position:relative;width:100%;height:clamp(540px,73vh,680px);
+  border:2.5px solid #232822;box-shadow:6px 6px 0 #232822;
+  background-color:#EFEFE6;
+  background-image:
+    radial-gradient(circle at 50% 45%,rgba(255,248,224,.84),rgba(221,214,191,.62) 78%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.14  0 0 0 0 0.16  0 0 0 0 0.13  0 0 0 .075 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  overflow:hidden;user-select:none;font-family:var(--mono);
+}
+.arena-stage.shake{animation:stage-shake .42s ease}
+@keyframes stage-shake{0%,100%{transform:translate(0)}25%{transform:translate(-6px,3px)}50%{transform:translate(6px,-3px)}75%{transform:translate(-3px,2px)}}
+.arena-stage.freeze .fighter,.arena-stage.freeze .demon-wrap,.arena-stage.freeze .fog-p{animation-play-state:paused}
+
+/* 流程二：全屏擂台战斗容器 */
+.battle-world{position:relative;width:100%;height:100%;transition:filter .55s ease,brightness .55s ease}
+.battle-world.blurred{filter:blur(7px) brightness(.55)}
+
+/* 透视感禅台场景 */
+.zen-dojo-bg{position:absolute;inset:0;z-index:1;pointer-events:none}
+.zen-dojo-bg svg{width:100%;height:100%}
+
+/* 顶部极简线框 HUD */
+.hud{position:relative;z-index:10;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
+  padding:9px 14px;background:rgba(246,244,236,.95);border-bottom:2px solid #232822;
+  font-family:var(--mono);font-size:11px;color:#232822}
+.hud-side{display:flex;align-items:center;gap:8px;min-width:0}
+.hud-side.right{justify-content:flex-end}
+.hud-meter{display:flex;align-items:center;gap:7px;flex:1;max-width:270px}
+.hud-tag{font-size:10.5px;font-weight:700;white-space:nowrap;letter-spacing:.04em}
+.hud-num{font-size:11px;font-weight:700;min-width:36px;text-align:right}
+.gauge{flex:1;height:12px;background:#E2E0D4;border:2px solid #232822;padding:1px;overflow:hidden}
+.gauge i{display:block;height:100%;transition:width .42s cubic-bezier(.2,.8,.2,1)}
+.gauge-zen i{background:#5D7A63}
+.gauge-fog i{background:#7D342E}
+
+.hud-btn{border:1.5px solid #232822;background:#F6F4EC;padding:4px 8px;font-family:var(--mono);font-size:10px;
+  font-weight:700;color:#232822;white-space:nowrap;box-shadow:1.5px 1.5px 0 #232822}
+.hud-btn:hover,.hud-btn.active{background:#232822;color:#EFEFE6}
+
+/* 顶部正中：第 X 回合 · 准备 + 10秒线香与佛珠环形倒计时 */
+.hud-center{display:flex;align-items:center;gap:10px;padding:4px 12px;border:2px solid #232822;
+  background:#EFEFE6;box-shadow:2px 2px 0 #232822}
+.beads-ring{width:30px;height:30px;flex:0 0 30px}
+.beads-ring svg{width:100%;height:100%;overflow:visible}
+.beads-ring.urgent circle.bead-progress{stroke:#A84232}
+.center-meta{display:flex;flex-direction:column;gap:4px;min-width:154px}
+.round-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;font-weight:700}
+.timer-badge{padding:1px 6px;border:1.5px solid #232822;background:#F6F4EC;font-size:10.5px}
+.timer-badge.urgent{background:#A84232;color:#FAF7F2;border-color:#232822;animation:urgent-blink .55s ease-in-out infinite}
+@keyframes urgent-blink{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+/* 线香燃烧条 */
+.incense-wrap{position:relative;height:7px;background:#DDDAD0;border:1.5px solid #232822;overflow:visible}
+.incense-body{height:100%;width:100%;background:#8D755C;transition:width .12s linear,background-color .2s}
+.incense-body.urgent{background:#A84232}
+.incense-spark{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;background:#C94A38;border:1px solid #232822;
+  transform:translate(-50%,-50%);transition:left .12s linear}
+
+/* 心魔弱点红色警告框 */
+.warn-box{position:absolute;left:50%;top:68px;transform:translateX(-50%);z-index:9;width:min(90%,520px);
+  padding:8px 14px;background:rgba(248,243,238,.96);border:2px solid #A84232;box-shadow:3px 3px 0 #232822;
+  font-family:var(--mono);font-size:11px;line-height:1.55;color:#232822;transition:opacity .25s,transform .25s}
+.warn-box.hidden{opacity:0;transform:translate(-50%,-6px);pointer-events:none}
+.warn-top{display:flex;align-items:center;gap:8px;font-weight:700;color:#9E3829;margin-bottom:2px}
+.warn-pill{background:#A84232;color:#FAF7F2;border:1px solid #232822;padding:0 6px;font-size:10px}
+.warn-sub{font-size:10.5px;color:#3E453D}
+.warn-sub em{font-style:normal;color:#9E3829;font-weight:700;text-decoration:underline}
+
+/* 左侧居中：少林小子皮影（待机皮影微摇呼吸动画） */
+.fighter{position:absolute;left:18%;top:49%;transform:translateY(-50%);width:clamp(160px,19.5vw,220px);height:clamp(160px,19.5vw,220px);
+  transform-origin:50% 85%;z-index:5}
 .fighter svg{width:100%;height:100%;overflow:visible}
-.fighter .force{fill:none;stroke:var(--verm);stroke-width:1.5;stroke-dasharray:4 4;opacity:.55}
-.fighter.idle{animation:boy-float 3.2s ease-in-out infinite}
-@keyframes boy-float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1.2deg)}}
-.fighter.act{animation-duration:.95s;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:both}
-.fighter.act.act-0{animation-name:strike-press}
-.fighter.act.act-1{animation-name:strike-chop}
-.fighter.act.act-2{animation-name:strike-thrust}
-.fighter.act.act-3{animation-name:strike-push}
-.fighter.act.act-4{animation-name:strike-zen}
-@keyframes strike-press{0%{transform:translate(0,0) scale(1)}18%{transform:translate(-20px,15px) scale(.9) rotate(-6deg)}48%{transform:translate(88px,24px) scale(1.13) rotate(5deg)}62%{transform:translate(98px,20px) scale(1.1) rotate(4deg)}100%{transform:translate(0,0) scale(1)}}
-@keyframes strike-chop{0%{transform:translate(0,0) rotate(0)}20%{transform:translate(-26px,-24px) rotate(-18deg)}50%{transform:translate(94px,-6px) rotate(16deg) scale(1.1)}65%{transform:translate(106px,8px) rotate(12deg)}100%{transform:translate(0,0) rotate(0)}}
-@keyframes strike-thrust{0%{transform:translateX(0) scale(1)}18%{transform:translateX(-24px) scale(.94)}48%{transform:translateX(122px) scale(1.07)}62%{transform:translateX(130px) scale(1.05)}100%{transform:translateX(0) scale(1)}}
-@keyframes strike-push{0%{transform:translateX(0) scale(1)}20%{transform:translateX(-22px) scale(.9)}50%{transform:translateX(134px) scale(1.15)}64%{transform:translateX(144px) scale(1.11)}100%{transform:translateX(0) scale(1)}}
-@keyframes strike-zen{0%{transform:translateY(0) scale(1)}40%{transform:translateY(15px) scale(.96)}100%{transform:translateY(0) scale(1)}}
-.fighter.bow{animation:bow 1.8s ease both}
-@keyframes bow{0%{transform:rotate(0)}45%{transform:rotate(15deg) translateY(6px)}100%{transform:rotate(0)}}
-.demon{position:absolute;right:11%;bottom:19%;width:clamp(180px,28vw,330px);height:clamp(190px,30vh,310px);z-index:3;
-  filter:blur(9px);opacity:calc(var(--fog,1) * .92);transition:opacity .8s ease,transform 1.1s ease;transform:scale(calc(.86 + var(--fog,1) * .14))}
-.demon.hit{animation:demon-hit .72s ease}
-@keyframes demon-hit{0%{transform:translateX(0) scale(calc(.86 + var(--fog,1) * .14))}30%{transform:translateX(28px) scale(calc(.9 + var(--fog,1) * .14)) skewX(-6deg)}58%{transform:translateX(15px) skewX(3deg)}100%{transform:translateX(0) scale(calc(.86 + var(--fog,1) * .14))}}
-.demon i{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(37,38,42,.82),rgba(37,38,42,.18) 70%,transparent 72%)}
-.demon i:nth-child(1){inset:12% 8% 6% 12%}
-.demon i:nth-child(2){width:60%;height:52%;left:4%;top:32%}
-.demon i:nth-child(3){width:62%;height:48%;right:2%;top:20%}
-.demon-eyes{position:absolute;right:calc(11% + clamp(76px,11vw,132px));bottom:calc(19% + clamp(92px,15vh,148px));width:56px;height:12px;z-index:5;
-  display:flex;justify-content:space-between;opacity:calc(var(--fog,1));transition:opacity .8s}
-.demon-eyes b{width:10px;height:8px;border-radius:50%;background:#b8432e;box-shadow:0 0 14px 4px rgba(184,67,46,.7)}
-.impact{position:absolute;right:20%;bottom:40%;width:10px;height:10px;z-index:5;pointer-events:none}
-.impact i{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:2px solid var(--verm);border-radius:50%;opacity:0}
-.impact.go i{animation:impact-ring .75s ease-out}
-.impact.go i:nth-child(2){animation-delay:.11s}
-.impact.go i:nth-child(3){animation-delay:.22s}
-@keyframes impact-ring{0%{transform:scale(.3);opacity:.95}100%{transform:scale(6.5);opacity:0}}
-.effect-text{position:absolute;left:50%;top:26%;transform:translateX(-50%);white-space:nowrap;text-align:center;z-index:7;
-  font-size:clamp(14px,1.8vw,21px);letter-spacing:.14em;color:var(--seal);opacity:0;transition:opacity .4s}
-.effect-text.show{opacity:1;animation:effect-float 1.9s ease both}
-@keyframes effect-float{0%{transform:translate(-50%,16px);opacity:0}20%{opacity:1}100%{transform:translate(-50%,-20px);opacity:0}}
-.bow-line{position:absolute;left:0;right:0;top:48%;text-align:center;font-size:clamp(15px,2vw,25px);letter-spacing:.2em;color:var(--ink);opacity:0;transition:opacity 1s;z-index:7}
-.bow-line.show{opacity:1}
-.drop-zone{position:absolute;left:7%;bottom:12%;width:clamp(150px,22vw,250px);height:62%;border:1px dashed transparent;transition:border-color .2s,background .2s;z-index:5}
-.drop-zone.over{border-color:var(--seal);background:rgba(162,92,73,.1)}
-.arena-side{padding:2px 0}
-.arena-side h2{margin:0 0 10px;font-weight:400;font-size:18px;letter-spacing:.14em}
-.arena-side p{margin:0 0 16px;font-size:12px;line-height:2;color:#56624f}
-.progress{display:flex;gap:7px;margin:0 0 18px}
-.progress b{width:22px;height:3px;background:rgba(37,52,34,.18)}
-.progress b.on{background:var(--seal)}
-.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
-.card{position:relative;min-height:118px;padding:14px 5px 10px;border:1px solid var(--line);background:rgba(243,240,226,.92);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;touch-action:none;cursor:pointer;
-  transition:transform .2s,border-color .2s,opacity .3s,box-shadow .2s}
-.card:hover{border-color:var(--seal);transform:translateY(-4px);box-shadow:0 8px 18px rgba(37,52,34,.12)}
-.card.next{border-color:var(--seal);box-shadow:0 0 0 2px rgba(162,92,73,.22);animation:card-pulse 1.8s ease-in-out infinite}
-@keyframes card-pulse{0%,100%{box-shadow:0 0 0 2px rgba(162,92,73,.18)}50%{box-shadow:0 0 0 5px rgba(162,92,73,.05)}}
-.card .num{font:13px 'Cormorant Garamond',Georgia,serif;color:var(--seal)}
-.card .key{position:absolute;top:4px;right:5px;min-width:15px;height:15px;line-height:14px;padding:0 3px;
-  font:10px/14px 'Cormorant Garamond',Georgia,serif;color:var(--muted);border:1px solid var(--line);background:rgba(255,255,255,.4)}
-.card .glyph{width:40px;height:46px}
-.card .name{font-size:10px;letter-spacing:.05em;line-height:1.5}
-.card.used{opacity:.3;pointer-events:none;filter:grayscale(1)}
-.card .note{display:none}
-.kbd-hint{margin-top:12px;font-size:10px;line-height:1.9;color:var(--muted)}
-.kbd-hint kbd{display:inline-block;padding:1px 6px;margin:0 1px;border:1px solid var(--line);border-bottom-width:2px;
-  font:10px 'Cormorant Garamond',Georgia,serif;color:var(--seal);background:rgba(243,240,226,.9)}
-.drag-ghost{position:fixed;z-index:200;pointer-events:none;width:96px;padding:8px;border:1px solid var(--seal);
-  background:rgba(243,240,226,.96);box-shadow:0 8px 26px rgba(37,52,34,.2);text-align:center;font-size:11px;transform:translate(-50%,-50%)}
-.side-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
-.arena-side .mini{font-size:10px;line-height:1.9;color:var(--muted)}
-.arena-side .mini em{font-style:normal;color:var(--seal)}
+.fighter.idle{animation:boy-breath 2.4s ease-in-out infinite}
+@keyframes boy-breath{
+  0%,100%{transform:translateY(-50%) rotate(0deg) scale(1,1)}
+  50%{transform:translateY(calc(-50% + 2.5px)) rotate(-1.1deg) scale(1.015,.982)}
+}
+.fighter.act{animation-duration:.66s;animation-timing-function:cubic-bezier(.2,.85,.25,1);animation-fill-mode:both}
+.fighter.act.act-0{animation-name:game-vuhu}
+.fighter.act.act-1{animation-name:game-pishan}
+.fighter.act.act-2{animation-name:game-yizhi}
+.fighter.act.act-3{animation-name:game-paishan}
+@keyframes game-vuhu{0%{transform:translate(0,-50%) scale(1)}25%{transform:translate(-14px,calc(-50% - 6px)) scale(.96)}55%{transform:translate(105px,calc(-50% + 12px)) scale(1.08)}100%{transform:translate(0,-50%) scale(1)}}
+@keyframes game-pishan{0%{transform:translate(0,-50%) rotate(0)}25%{transform:translate(-14px,calc(-50% - 8px)) rotate(-12deg)}55%{transform:translate(112px,calc(-50% + 4px)) rotate(12deg) scale(1.07)}100%{transform:translate(0,-50%) rotate(0)}}
+@keyframes game-yizhi{0%{transform:translate(0,-50%) scale(1)}25%{transform:translate(-14px,-50%) scale(.96)}55%{transform:translate(128px,-50%) scale(1.06)}100%{transform:translate(0,-50%) scale(1)}}
+@keyframes game-paishan{0%{transform:translate(0,-50%) scale(1)}25%{transform:translate(-14px,-50%) scale(.97)}55%{transform:translate(118px,-50%) scale(1.08)}100%{transform:translate(0,-50%) scale(1)}}
+.fighter.meditate{animation:boy-meditate 1.1s ease-out forwards}
+@keyframes boy-meditate{0%{transform:translate(0,-50%) scale(1)}100%{transform:translate(36px,calc(-50% + 8px)) scale(1.05)}}
+
+/* 右侧：心魔（半透明黑雾 + 粒子聚拢动画） */
+.demon-wrap{position:absolute;right:15%;top:49%;transform:translateY(-52%);width:clamp(195px,24vw,270px);height:clamp(165px,21vw,220px);
+  z-index:4;transition:opacity 1.8s ease,transform 1.8s ease}
+.demon-wrap.hit{animation:demon-recoil .48s ease}
+@keyframes demon-recoil{0%{transform:translate(0,-52%) scale(var(--dscale,1))}35%{transform:translate(22px,-52%) scale(calc(var(--dscale,1) * .92))}100%{transform:translate(0,-52%) scale(var(--dscale,1))}}
+.demon-wrap.wind-scatter{opacity:0;transform:translate(68px,-64%) scale(.75);pointer-events:none}
+.demon-cloud{width:100%;height:100%;transform:scale(var(--dscale,1));transform-origin:50% 55%;
+  opacity:calc(.14 + var(--fog,1) * .68);animation:fog-gather 3.2s ease-in-out infinite;transition:transform .45s ease,opacity .45s ease}
+@keyframes fog-gather{
+  0%,100%{transform:scale(calc(var(--dscale,1) * 1.04)) translateY(0)}
+  50%{transform:scale(calc(var(--dscale,1) * .94)) translateY(-4px)}
+}
+.demon-cloud svg{width:100%;height:100%;overflow:visible}
+
+.fog-particles{position:absolute;inset:-28px;pointer-events:none;z-index:6}
+.fog-p{position:absolute;border-radius:50%;opacity:0;pointer-events:none}
+.fog-p.gather-amb{background:rgba(35,40,34,.36);border:1.2px solid #232822;animation:fog-inward 2.4s ease-in infinite}
+@keyframes fog-inward{
+  0%{opacity:0;transform:translate(var(--gx,42px),var(--gy,-24px)) scale(.4)}
+  35%{opacity:.72}
+  100%{opacity:0;transform:translate(0,0) scale(1.05)}
+}
+.fog-p.burst{background:#343832;border:1.4px solid #232822;animation:fog-burst .75s cubic-bezier(.16,.84,.3,1) forwards}
+@keyframes fog-burst{
+  0%{opacity:.9;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(var(--tx,40px),var(--ty,-30px)) scale(.2)}
+}
+.fog-p.wind-light{background:#F7F3E3;border:1.4px solid #8E9E8B;animation:wind-disperse 3.6s cubic-bezier(.16,.72,.28,1) forwards}
+@keyframes wind-disperse{
+  0%{opacity:.95;transform:translate(0,0) scale(1)}
+  35%{opacity:.88}
+  100%{opacity:0;transform:translate(var(--tx,110px),var(--ty,-55px)) scale(.25)}
+}
+
+.effect-text{position:absolute;left:50%;top:124px;transform:translateX(-50%);white-space:nowrap;text-align:center;z-index:8;
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;color:#232822;background:#F6F4EC;
+  border:2px solid #232822;box-shadow:2px 2px 0 #232822;padding:4px 12px;opacity:0;pointer-events:none}
+.effect-text.show{animation:effect-float 1.75s ease both}
+@keyframes effect-float{0%{transform:translate(-50%,10px);opacity:0}18%{opacity:1}82%{opacity:1}100%{transform:translate(-50%,-12px);opacity:0}}
+
+.zen-climax-banner{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%) scale(.94);z-index:14;
+  padding:12px 26px;background:#F6F4EC;border:2.5px solid #232822;box-shadow:5px 5px 0 #232822;
+  font-family:var(--mono);font-size:clamp(18px,2.4vw,26px);font-weight:700;letter-spacing:.22em;color:#232822;
+  opacity:0;pointer-events:none;transition:opacity .65s ease,transform .65s ease;white-space:nowrap}
+.zen-climax-banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.zen-climax-banner small{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.1em;color:#5D7A63;text-align:center}
+
+.skill-deck{position:absolute;left:0;right:0;bottom:0;z-index:10;padding:8px 10px 9px;
+  background:rgba(246,244,236,.96);border-top:2px solid #232822;font-family:var(--mono)}
+.skill-keys{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.skill-key{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  padding:8px 9px;border:2px solid #232822;background:#F6F4EC;text-align:left;
+  box-shadow:2.5px 2.5px 0 #232822;transition:transform .12s,background .15s,box-shadow .12s,opacity .25s,border-color .25s}
+.skill-key:hover{background:#EAE7D8;transform:translate(-1px,-1px);box-shadow:3.5px 3.5px 0 #232822}
+.skill-key:active,.skill-key.pressed{transform:translate(2px,2px);box-shadow:0 0 0 #232822;background:#DDD9C7}
+.skill-key.used-state{background:#E4E2D6;opacity:.68}
+.skill-key.counter-glow{border-color:#A84232;box-shadow:2.5px 2.5px 0 #A84232;background:#F9F2EE}
+.skill-key.shoushi-key{opacity:.48;background:#E8E6DC;border-style:dashed}
+.skill-key.shoushi-key.unlocked{opacity:1;border-style:solid;border-width:2.5px;border-color:#232822;
+  background:#E3ECE4;box-shadow:3px 3px 0 #5D7A63;animation:unlock-pulse 1.6s ease-in-out infinite}
+@keyframes unlock-pulse{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-2px)}
+}
+.skill-top{display:flex;align-items:center;justify-content:space-between;width:100%;gap:4px}
+.skill-num{font-size:10px;font-weight:700;color:#677063}
+.skill-bind{font-size:10px;font-weight:700;padding:1px 6px;border:1.5px solid #232822;background:#EFEFE6;color:#232822}
+.skill-name{font-size:11.5px;font-weight:700;color:#232822;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.skill-sub{font-size:9.5px;color:#5B635A;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.cycle-bar{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:10px;color:#5B635A}
+
+/* 流程一：开场说明弹窗 */
+.intro-modal-backdrop{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;
+  background:rgba(239,239,230,.52);backdrop-filter:blur(7px)}
+.intro-modal-backdrop.hidden{display:none}
+.intro-panel{width:min(94vw,560px);max-height:94%;overflow-y:auto;background:#F6F4EC;
+  border:1px solid #232822;outline:1px solid rgba(35,40,34,.25);outline-offset:-5px;
+  box-shadow:6px 6px 0 rgba(35,40,34,.85);padding:20px 24px;font-family:var(--mono);color:#232822}
+.intro-totem{display:flex;justify-content:center;margin-bottom:8px}
+.intro-totem svg{width:70px;height:70px}
+.intro-title{margin:2px 0 10px;text-align:center;font-size:16px;font-weight:700;letter-spacing:.12em}
+.intro-desc{margin:0 0 14px;text-align:center;font-size:11.5px;line-height:1.85;color:#464E44}
+.intro-rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:16px}
+.intro-rule-card{padding:7px 9px;border:1px solid #232822;background:#EFEFE6;font-size:10px;line-height:1.55}
+.intro-rule-card b{display:block;color:#232822;margin-bottom:2px}
+.intro-rule-card span{color:#5B635A}
+.intro-rule-card.full{grid-column:1/-1;background:#E9ECE5}
+.intro-actions{display:flex;justify-content:center}
+.btn-primary-dark{padding:10px 22px;border:2px solid #232822;background:#232822;color:#EFEFE6;
+  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.08em;box-shadow:3px 3px 0 rgba(35,40,34,.35)}
+.btn-primary-dark:hover{background:#3A4238}
+.btn-outline-wire{padding:10px 18px;border:2px solid #232822;background:#F6F4EC;color:#232822;
+  font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.06em;box-shadow:3px 3px 0 rgba(35,40,34,.2)}
+.btn-outline-wire:hover{background:#E7E4D6}
+
+/* 流程三：结算界面 */
+.result-modal-backdrop{position:absolute;inset:0;z-index:35;display:none;align-items:center;justify-content:center;padding:16px;
+  background:rgba(28,32,27,.58);backdrop-filter:blur(8px)}
+.result-modal-backdrop.open{display:flex}
+.result-panel{width:min(95vw,640px);background:#F6F4EC;border:2px solid #232822;box-shadow:6px 6px 0 #232822;
+  padding:20px 22px;font-family:var(--mono);color:#232822}
+.result-body{display:grid;grid-template-columns:minmax(185px,.9fr) minmax(0,1.1fr);gap:18px;align-items:stretch}
+.chain-brief{border:1.5px solid #232822;background:#EFEFE6;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
+.chain-brief-title{font-size:10px;font-weight:700;letter-spacing:.08em;color:#464E44;border-bottom:1px solid rgba(35,40,34,.25);padding-bottom:5px;margin-bottom:6px}
+.chain-brief svg{width:100%;height:165px;display:block}
+.result-right{display:flex;flex-direction:column;justify-content:space-between}
+.result-round-head{font-size:15px;font-weight:700;letter-spacing:.08em;padding-bottom:8px;margin-bottom:10px;border-bottom:1.5px solid #232822}
+.result-verdict{font-size:12px;line-height:1.9;margin:0 0 14px;color:#232822;font-weight:700}
+.result-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-box{border:1.5px solid #232822;background:#EFEFE6;padding:8px 10px}
+.stat-box small{display:block;font-size:9.5px;color:#5B635A;margin-bottom:2px}
+.stat-box strong{font-size:14px;color:#232822}
+.result-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px dashed rgba(35,40,34,.3)}
+
+/* 图鉴弹窗 */
+.mini-modal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;
+  background:rgba(35,40,34,.45);backdrop-filter:blur(4px);padding:18px}
+.mini-modal.open{display:flex}
+.mini-modal-box{width:min(92vw,500px);background:#F6F4EC;border:2px solid #232822;box-shadow:6px 6px 0 #232822;padding:18px 20px;font-family:var(--mono)}
+.mini-modal-box h3{margin:0 0 8px;font-size:15px;letter-spacing:.08em}
+.mini-modal-box p{margin:0 0 10px;font-size:11px;line-height:1.8;color:#464E44}
+.mini-modal-box ul{margin:0 0 14px;padding-left:18px;font-size:10.5px;line-height:1.85}
 
 .footer{border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 26px;
-  font:10px 'Cormorant Garamond',var(--serif);letter-spacing:.14em;color:var(--muted);background:rgba(233,236,223,.94)}
+  font:10px var(--mono);letter-spacing:.12em;color:var(--muted);background:rgba(239,239,230,.94)}
 .footer span:last-child{font-family:var(--serif)}
-@media(max-width:900px){.anatomy-grid,.arena-grid{grid-template-columns:1fr}.figure-wrap{max-height:52vh}.tabs button{width:clamp(74px,17vw,110px)}.top{padding:0 12px}.brand small{display:none}.nav button{padding:0 9px}.footer{padding:0 12px}.footer span:first-child{display:none}}
+@media(max-width:920px){
+  .anatomy-grid,.result-body{grid-template-columns:1fr}
+  .figure-wrap{max-height:52vh}
+  .tabs button{width:clamp(78px,18vw,112px)}
+  .top{padding:0 12px}.brand small{display:none}.nav button{padding:0 9px}
+  .hud{grid-template-columns:1fr;gap:6px}
+  .hud-center{order:-1;justify-content:center}
+  .warn-box{top:118px}
+  .footer{padding:0 12px}.footer span:first-child{display:none}
+}
+@media(max-width:680px){
+  .skill-keys{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .skill-keys .skill-key:last-child{grid-column:1/-1}
+  .intro-rules{grid-template-columns:1fr}
+  .arena-stage{height:630px}
+}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -305,61 +526,277 @@ details.sources p{margin:8px 0 0;font-family:Georgia,var(--serif)}
   <p class="kicker" data-i18n="anatomyKicker"></p>
   <h1 data-i18n="anatomyTitle"></h1>
   <p class="lead" data-i18n="anatomyLead"></p>
-  <div class="tabs" id="actionTabs"></div>
+  <div class="anatomy-toolbar">
+    <div class="tabs" id="actionTabs"></div>
+    <div class="loop-meta">
+      <span class="drill-tag" id="drillCode">DRILL 01 / ARHAT</span>
+      <span id="loopTempoLabel">CYCLE · 3.0s LOOP</span>
+    </div>
+  </div>
   <div class="anatomy-grid">
     <div>
       <div class="figure-wrap" id="figureWrap">
-        <svg class="figure-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" id="figureSvg"></svg>
-        <div class="figure-legend"><i></i><span data-i18n="forceLegend"></span></div>
+        <div class="figure-hud">
+          <b id="hudDrillBadge">DRILL 01 · SEAMLESS LOOP</b>
+          <b id="hudPhaseBadge">PHASE · FORCE FLOW</b>
+        </div>
+        <div class="media-slot" id="mediaSlot" aria-hidden="true"></div>
+        <svg class="figure-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" id="figureSvg"></svg>
+        <div class="figure-legend" id="figureLegend"><i></i><span data-i18n="forceLegend"></span></div>
       </div>
     </div>
     <div class="anatomy-info">
       <h2 id="actionName"></h2>
       <p class="sub" id="actionSub"></p>
+      <div class="rhythm-strip" id="rhythmStrip"></div>
       <div class="annotation" id="annotation"><p class="placeholder" data-i18n="annotationPlaceholder"></p></div>
     </div>
     <p class="disclaimer" data-i18n="anatomyDisclaimer"></p>
   </div>
 </section>
 
+<!-- ========================================================================
+     第三部分：少林小子擂台战（皮影戏演绎版）
+     ======================================================================== -->
 <section class="panel" id="panel-arena">
-  <p class="kicker" data-i18n="arenaKicker"></p>
-  <h1 data-i18n="arenaTitle"></h1>
-  <p class="lead" data-i18n="arenaLead"></p>
-  <div class="arena-grid">
+  <div class="arena-shell">
     <div class="arena-stage" id="arenaStage">
-      <div class="speedlines" aria-hidden="true"></div>
-      <div class="hud">
-        <span class="hud-round"><span data-i18n="hudRound"></span> <b id="roundNum">01</b> / 05</span>
-        <span class="hud-gauge"><span data-i18n="hudStance"></span><span class="gauge"><i id="stanceBar" style="width:100%"></i></span></span>
+
+      <!-- 流程一：开场说明弹窗 -->
+      <div class="intro-modal-backdrop" id="introModal">
+        <div class="intro-panel" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+          <div class="intro-totem" aria-hidden="true">
+            <!-- 少林小子皮影镂空图腾（保留戒疤、交领、活动铆钉与竹签操纵线） -->
+            <svg viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="29" fill="#FFF9E6" stroke="#24180E" stroke-width="1.6"/>
+              <circle cx="32" cy="32" r="25.5" fill="none" stroke="#9E4B3B" stroke-width="0.9" stroke-dasharray="2.5 2"/>
+              <!-- 操纵竹签丝线 -->
+              <line x1="32" y1="3" x2="32" y2="12.5" stroke="#4F351B" stroke-width="0.9" stroke-dasharray="1.8 1.4"/>
+              <line x1="17" y1="7" x2="21.5" y2="39" stroke="#4F351B" stroke-width="0.8" stroke-dasharray="1.8 1.4"/>
+              <line x1="47" y1="7" x2="42.5" y2="39" stroke="#4F351B" stroke-width="0.8" stroke-dasharray="1.8 1.4"/>
+              <!-- 皮影头部与六点戒疤 -->
+              <ellipse cx="32" cy="19.5" rx="6.5" ry="7.2" fill="#E8B974" stroke="#24180E" stroke-width="1.5"/>
+              <circle cx="29.8" cy="15.4" r="0.75" fill="#24180E"/>
+              <circle cx="32" cy="14.9" r="0.75" fill="#24180E"/>
+              <circle cx="34.2" cy="15.4" r="0.75" fill="#24180E"/>
+              <circle cx="30.2" cy="13.7" r="0.65" fill="#24180E"/>
+              <circle cx="32" cy="13.3" r="0.65" fill="#24180E"/>
+              <circle cx="33.8" cy="13.7" r="0.65" fill="#24180E"/>
+              <path d="M28,18.2 Q30,17 31.3,18.3 M32.7,18.3 Q34,17 36,18.2" fill="none" stroke="#24180E" stroke-width="1.3" stroke-linecap="round"/>
+              <!-- 镂空雕花僧袍 -->
+              <path d="M21,45 L25.5,28.5 L38.5,28.5 L43,45 Z" fill="#C96E34" stroke="#24180E" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M28,28.5 L32,34.5 L36,28.5" fill="none" stroke="#24180E" stroke-width="1.3"/>
+              <!-- 镂空云纹窗孔 -->
+              <circle cx="27.5" cy="39" r="1.4" fill="#FFF9E6" stroke="#24180E" stroke-width="0.8"/>
+              <circle cx="36.5" cy="39" r="1.4" fill="#FFF9E6" stroke="#24180E" stroke-width="0.8"/>
+              <!-- 双臂与黄铜铆钉 -->
+              <path d="M25.5,31 L21.5,39 L28,36.5 M38.5,31 L42.5,39 L36,36.5" fill="none" stroke="#24180E" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="25.5" cy="31" r="1.3" fill="#D6A449" stroke="#24180E" stroke-width="0.8"/>
+              <circle cx="38.5" cy="31" r="1.3" fill="#D6A449" stroke="#24180E" stroke-width="0.8"/>
+              <circle cx="32" cy="36.5" r="1.4" fill="#D6A449" stroke="#24180E" stroke-width="0.8"/>
+              <line x1="14" y1="48" x2="50" y2="48" stroke="#24180E" stroke-width="1.4"/>
+            </svg>
+          </div>
+          <h3 class="intro-title" id="introTitle">05 · 少林 · 降伏其心</h3>
+          <p class="intro-desc">先立桩、抱元、择木，再于皮影戏台之上迎战心魔。五招相生相克，降伏其心，方得自在。</p>
+          <div class="intro-rules">
+            <div class="intro-rule-card"><b>[1] 罗汉伏虎 (A)</b><span>伏虎下按 · 克制外层「雾化」</span></div>
+            <div class="intro-rule-card"><b>[2] 少林棍·劈山势 (S)</b><span>长棍斜劈 · 破开浓重「黑气」</span></div>
+            <div class="intro-rule-card"><b>[3] 一指禅 (D)</b><span>直指核心 · 打断心魔「蓄力」</span></div>
+            <div class="intro-rule-card"><b>[4] 排山运掌 (F)</b><span>双掌贯力 · 震退执念「反扑」</span></div>
+            <div class="intro-rule-card full"><b>[5] 达摩坐禅·收势 (G)</b><span>前四招使用后高亮解锁 · 屏息定格 5 秒，化黑雾为浅色粒子归位</span></div>
+          </div>
+          <div class="intro-actions">
+            <button class="btn-primary-dark" id="startTrialBtn" type="button">[ 登台试炼 · 开启 ]</button>
+          </div>
+        </div>
       </div>
-      <span class="arena-label" data-i18n="arenaStageLabel"></span>
-      <div class="strike-banner" id="strikeBanner"><b id="strikeName"></b><small id="strikeSub"></small></div>
-      <div class="demon-status"><span data-i18n="hudDemon"></span><span class="gauge"><i id="demonBar" style="width:100%"></i></span></div>
-      <div class="dohyo" aria-hidden="true"><div class="dohyo-inner"></div></div>
-      <div class="fighter idle" id="fighter" aria-hidden="true"></div>
-      <div class="drop-zone" id="dropZone"></div>
-      <div class="demon" id="demon" style="--fog:1"><i></i><i></i><i></i></div>
-      <div class="demon-eyes" id="demonEyes" style="--fog:1"><b></b><b></b></div>
-      <div class="impact" id="impact" aria-hidden="true"><i></i><i></i><i></i></div>
-      <div class="effect-text" id="effectText"></div>
-      <div class="bow-line" id="bowLine"></div>
-    </div>
-    <div class="arena-side">
-      <h2 data-i18n="cardsTitle"></h2>
-      <p data-i18n="cardsLead"></p>
-      <div class="progress" id="progress"></div>
-      <div class="cards" id="cardRow"></div>
-      <p class="kbd-hint" data-i18n="kbdHint"></p>
-      <div class="side-actions">
-        <button class="ghost-btn" id="resetBtn" data-i18n="reset"></button>
-        <button class="ghost-btn" id="completeBtn" data-i18n="complete"></button>
+
+      <!-- 流程二：全屏擂台战斗界面 -->
+      <div class="battle-world" id="battleWorld">
+        <div class="hud">
+          <div class="hud-side">
+            <div class="hud-meter">
+              <span class="hud-tag">定力</span>
+              <span class="gauge gauge-zen"><i id="stanceBar" style="width:80%"></i></span>
+              <span class="hud-num" id="stanceVal">80%</span>
+            </div>
+          </div>
+
+          <div class="hud-center">
+            <div class="beads-ring" id="beadsRing" title="佛珠倒计时">
+              <svg viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#232822" stroke-width="1.4" stroke-dasharray="2.2 2.4"/>
+                <circle class="bead-progress" id="beadArc" cx="18" cy="18" r="14" fill="none" stroke="#5D7A63" stroke-width="2.6"
+                        stroke-dasharray="88" stroke-dashoffset="0" transform="rotate(-90 18 18)"/>
+                <circle cx="18" cy="4" r="2.2" fill="#232822"/>
+              </svg>
+            </div>
+            <div class="center-meta">
+              <div class="round-row">
+                <span id="roundLabel">第 1 回合 · 准备</span>
+                <span class="timer-badge" id="timerBadge">10s</span>
+              </div>
+              <div class="incense-wrap" title="线香燃烧倒计时">
+                <div class="incense-body" id="incenseBody" style="width:100%"></div>
+                <span class="incense-spark" id="incenseSpark" style="left:100%"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hud-side right">
+            <div class="hud-meter">
+              <span class="hud-tag">雾气</span>
+              <span class="gauge gauge-fog"><i id="demonBar" style="width:100%"></i></span>
+              <span class="hud-num" id="demonVal">100%</span>
+            </div>
+            <button class="hud-btn" id="soundToggleBtn" type="button">音效:关</button>
+          </div>
+        </div>
+
+        <!-- 透视感皮影影窗禅台场景 -->
+        <div class="zen-dojo-bg" aria-hidden="true">
+          <svg viewBox="0 0 800 500" preserveAspectRatio="none">
+            <defs>
+              <radialGradient id="shadowScreenGlow" cx="50%" cy="44%" r="58%">
+                <stop offset="0%" stop-color="#FFF9E4"/>
+                <stop offset="60%" stop-color="#F2E7C9"/>
+                <stop offset="100%" stop-color="#DFD3B0"/>
+              </radialGradient>
+            </defs>
+            <rect width="800" height="500" fill="url(#shadowScreenGlow)"/>
+            <!-- 影窗木框边饰 -->
+            <line x1="0" y1="230" x2="800" y2="230" stroke="#24180E" stroke-width="1.3" opacity=".32"/>
+            <line x1="120" y1="0" x2="120" y2="230" stroke="#24180E" stroke-width="1.2" opacity=".16"/>
+            <line x1="680" y1="0" x2="680" y2="230" stroke="#24180E" stroke-width="1.2" opacity=".16"/>
+            <!-- 透视禅台主体 -->
+            <polygon points="170,230 630,230 775,440 25,440" fill="#E3D4B2" stroke="#24180E" stroke-width="2.4" stroke-linejoin="round"/>
+            <polygon points="205,242 595,242 720,422 80,422" fill="none" stroke="#6E3520" stroke-width="1.3" stroke-dasharray="7 5" opacity=".55"/>
+            <!-- 禅台地砖透视分割线 -->
+            <line x1="285" y1="230" x2="210" y2="440" stroke="#24180E" stroke-width="1.1" opacity=".28"/>
+            <line x1="400" y1="230" x2="400" y2="440" stroke="#24180E" stroke-width="1.1" opacity=".32"/>
+            <line x1="515" y1="230" x2="590" y2="440" stroke="#24180E" stroke-width="1.1" opacity=".28"/>
+            <line x1="115" y1="312" x2="685" y2="312" stroke="#24180E" stroke-width="1.1" opacity=".25"/>
+            <!-- 禅台侧立面厚度 -->
+            <polygon points="25,440 775,440 775,456 25,456" fill="#C7B28B" stroke="#24180E" stroke-width="2.2"/>
+          </svg>
+        </div>
+
+        <!-- 心魔弱点红色警告框 -->
+        <div class="warn-box" id="warnBox" role="alert">
+          <div class="warn-top"><span class="warn-pill">弱点提示</span><span id="warnTitle">心魔正在蓄力，需使用「一指禅」打断！</span></div>
+          <div class="warn-sub" id="warnSub">倒计时结束前按下对应快捷键或点击招式按钮，超时将损耗定力。</div>
+        </div>
+
+        <!-- 左侧居中：少林小子皮影 -->
+        <div class="fighter idle" id="fighter" aria-hidden="true"></div>
+
+        <!-- 右侧：心魔 -->
+        <div class="demon-wrap" id="demon" style="--fog:1;--dscale:1">
+          <div class="demon-cloud" id="demonCloud">
+            <svg viewBox="0 0 260 210" aria-hidden="true">
+              <path d="M54,158 C24,154 14,124 30,102 C20,76 42,50 70,55 C82,26 124,20 148,42 C176,28 214,42 218,72 C242,84 244,122 220,140 C226,164 198,180 172,168 C150,184 114,182 94,166 C76,174 58,168 54,158 Z"
+                    fill="rgba(44,48,43,0.76)" stroke="#232822" stroke-width="2.6" stroke-linejoin="round"/>
+              <path d="M76,136 C56,132 50,108 64,94 C60,72 82,58 104,66 C122,50 154,54 166,74 C188,74 198,98 184,118 C190,136 168,148 148,140 C128,150 98,148 76,136 Z"
+                    fill="rgba(31,34,30,0.82)" stroke="#232822" stroke-width="1.8"/>
+              <ellipse cx="106" cy="103" rx="9" ry="5.5" fill="#7D342E" stroke="#232822" stroke-width="1.5"/>
+              <circle cx="107" cy="103" r="2.6" fill="#D9C4B1"/>
+              <ellipse cx="144" cy="103" rx="9" ry="5.5" fill="#7D342E" stroke="#232822" stroke-width="1.5"/>
+              <circle cx="143" cy="103" r="2.6" fill="#D9C4B1"/>
+            </svg>
+          </div>
+          <div class="fog-particles" id="fogParticles"></div>
+        </div>
+
+        <div class="effect-text" id="effectText"></div>
+
+        <div class="zen-climax-banner" id="zenClimaxBanner">
+          内心不乱为定
+          <small>黑雾随风散去 · 归于本心</small>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="skill-deck">
+          <div class="skill-keys" id="skillKeys">
+            <button class="skill-key" data-skill="0" type="button">
+              <span class="skill-top"><span class="skill-num">[1]</span><span class="skill-bind">A</span></span>
+              <span class="skill-name">罗汉伏虎</span>
+              <span class="skill-sub">破除「雾化」外障</span>
+            </button>
+            <button class="skill-key" data-skill="1" type="button">
+              <span class="skill-top"><span class="skill-num">[2]</span><span class="skill-bind">S</span></span>
+              <span class="skill-name">少林棍·劈山势</span>
+              <span class="skill-sub">劈开「黑气」浓障</span>
+            </button>
+            <button class="skill-key counter-glow" data-skill="2" type="button">
+              <span class="skill-top"><span class="skill-num">[3]</span><span class="skill-bind">D</span></span>
+              <span class="skill-name">一指禅</span>
+              <span class="skill-sub">打断心魔「蓄力」</span>
+            </button>
+            <button class="skill-key" data-skill="3" type="button">
+              <span class="skill-top"><span class="skill-num">[4]</span><span class="skill-bind">F</span></span>
+              <span class="skill-name">排山运掌</span>
+              <span class="skill-sub">震退执念「反扑」</span>
+            </button>
+            <button class="skill-key shoushi-key" id="shoushiKey" data-skill="4" type="button">
+              <span class="skill-top"><span class="skill-num">[5]</span><span class="skill-bind">G</span></span>
+              <span class="skill-name">达摩坐禅·收势</span>
+              <span class="skill-sub">前四招后高亮解锁</span>
+            </button>
+          </div>
+          <div class="cycle-bar">
+            <span id="unlockStatusText">收势进度：已悟 0 / 4 招（用完前四招解锁[5]）</span>
+            <span>快捷键：A / S / D / F / G · 重开：R</span>
+          </div>
+        </div>
       </div>
-      <p class="mini" id="arenaMini" data-i18n="arenaMini"></p>
+
+      <!-- 流程三：结算界面 -->
+      <div class="result-modal-backdrop" id="resultModal">
+        <div class="result-panel" role="dialog" aria-modal="true" aria-labelledby="resultRoundTitle">
+          <div class="result-body">
+            <div class="chain-brief">
+              <div class="chain-brief-title">本轮招式连线简报</div>
+              <svg id="chainBriefSvg" viewBox="0 0 190 165" aria-label="本轮战斗使用的招式连线图"></svg>
+            </div>
+            <div class="result-right">
+              <div>
+                <div class="result-round-head" id="resultRoundTitle">第 1 回合 · 胜负已分</div>
+                <p class="result-verdict" id="resultVerdict">内心不乱为定，外不著相为禅。你降伏了心魔。</p>
+              </div>
+              <div class="result-stats">
+                <div class="stat-box"><small>使用招式数</small><strong id="statMoves">5/5</strong></div>
+                <div class="stat-box"><small>剩余定力</small><strong id="statStance">80%</strong></div>
+              </div>
+            </div>
+          </div>
+          <div class="result-actions">
+            <button class="btn-primary-dark" id="openCodexFromResultBtn" type="button">[ 揭晓禅理 · 查看图鉴 ]</button>
+            <button class="btn-outline-wire" id="rematchBtn" type="button">[ 再战擂台 ]</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 </main>
+
+<!-- 禅理与五式图鉴弹窗 -->
+<div class="mini-modal" id="miniModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="mini-modal-box">
+    <h3 id="modalTitle">少林禅理 · 五式相生相克图鉴</h3>
+    <p>“内心不乱为定，外不著相为禅。”五招非为杀伐，而在依次破除雾化、黑气、蓄力与反扑，最终归于坐禅收势：</p>
+    <ul>
+      <li><strong>[1] 罗汉伏虎 (A)</strong>：双掌下按，沉气立桩，克制外层「雾化」。</li>
+      <li><strong>[2] 少林棍·劈山势 (S)</strong>：腰髋催棍，走弧劈落，破开浓重「黑气」。</li>
+      <li><strong>[3] 一指禅 (D)</strong>：直指核心，不闪不避，打断心魔「蓄力」。</li>
+      <li><strong>[4] 排山运掌 (F)</strong>：力从地起，贯达掌根，震退执念「反扑」。</li>
+      <li><strong>[5] 达摩坐禅·收势 (G)</strong>：由外收内，合掌归位，黑雾化作浅色光粒随风消散。</li>
+    </ul>
+    <button class="btn-primary-dark" id="closeModalBtn" type="button">[ 关闭图鉴 ]</button>
+  </div>
+</div>
 
 <footer class="footer"><span>WUDAO MOUNTAIN GATHERING · SHAOLIN</span><span data-i18n="footer"></span></footer>
 
@@ -367,7 +804,7 @@ details.sources p{margin:8px 0 0;font-family:Georgia,var(--serif)}
 (function(){
 'use strict';
 var arenaId='shaolin', parentOrigin=location.origin;
-var context=null, paused=false, disposed=false;
+var context=null, paused=false, disposed=false, soundOn=false;
 var send=function(type,extra){if(parent!==window)parent.postMessage(Object.assign({type:type,version:1,arenaId:arenaId},extra||{}),parentOrigin)};
 
 /* ---------- copy ---------- */
@@ -383,19 +820,13 @@ var I18N={
     sourcesTitle:'学术依据',
     sources:'Lu Zhouxiang, A History of Shaolin: Buddhism, Kung Fu and Identity (Routledge, 2019)；郝勤，《论少林功夫中的“禅”与“武”》（第十一届全国体育科学大会，2019）；国家级非遗“少林功夫”项目档案。',
     anatomyKicker:'02 / 五个动作 · 一张身体地图',anatomyTitle:'动作解剖：力从哪里来，到哪里去',
-    anatomyLead:'五个少林动作的分解解剖图，与擂台战五张卡牌一一对应。点击剪影切换动作，点击红色编号圆点查看部位注释。',
-    forceLegend:'红色虚线＝发力路径',pathTitle:'发力路径',annotationPlaceholder:'点击图中编号圆点，查看该部位注释与本式完整解读。',
-    anatomyDisclaimer:'解剖图用于动作教学示意，不作医学诊断。',
+    anatomyLead:'五个少林动作的皮影戏无缝循环解剖图。顶部横向切换招式，红色流光虚线展示发力传导，发力节点将闪烁高亮——点击圆点查看部位注释。',
+    forceLegend:'红色流光虚线＝发力传导',goldLegend:'淡金色光晕＝坐禅收势',strikeNodesHint:'闪烁圆点＝发力节点',
+    pathTitle:'发力路径',annotationPlaceholder:'点击图中高亮或编号圆点，查看该部位注释与本式完整解读。',
+    anatomyDisclaimer:'皮影解剖图用于动作教学示意，不作医学诊断。',
     pointNote:'圆点注释',pointError:'本点常见错误',pointLink:'本点在发力链中',formFull:'本式完整解读',
     detailKey:'关键部位',detailEssence:'动作要领',detailErrors:'常见错误',detailRelation:'与发力路径的关系',detailCard:'卡牌对应',
-    arenaKicker:'03 / 少林小子擂台战',arenaTitle:'降伏其心，不是降伏别人',
-    arenaLead:'把五张卡牌拖到少林小子身上：心魔不会“掉血”，只会一层层变薄。前四张是“武”，第五张是“禅”。',
-    arenaStageLabel:'土俵 · 少林小子 对 心魔',cardsTitle:'五式 · 出招',cardsLead:'按顺序出招：拖拽卡牌到少林小子，点击卡牌，或直接按数字键。每一式对应一个身体部位。',
-    hudRound:'第',hudStance:'架势',hudDemon:'心魔',kbdHint:'按 <kbd>1</kbd>–<kbd>5</kbd> 出招 · <kbd>空格</kbd> 下一式 · <kbd>R</kbd> 重来',
-    strikeReady:'起势',strikeReadySub:'选择一式 · 出招降伏其心',
-    reset:'重新来过',complete:'完成体验',arenaMini:'心魔是修行的一部分：<em>魔障</em>指尘劳业境与执念。五张牌打完，不是“杀死了谁”，而是“降伏了自己的心”。',
-    footer:'动作示意 · 学术存疑处保留灰色底纹',
-    done:'五式已成 · 心魔散去',bow:'内心不乱为定，外不著相为禅。',more:'继续擦拭，典籍层会显现更多细节。'
+    footer:'皮影戏动作示意 · 学术存疑处保留灰色底纹'
   },
   en:{
     navNarrative:'Deconstruct',navAnatomy:'Anatomy',navArena:'The Arena',exit:'Leave experience',
@@ -408,19 +839,13 @@ var I18N={
     sourcesTitle:'Academic sources',
     sources:'Lu Zhouxiang, A History of Shaolin: Buddhism, Kung Fu and Identity (Routledge, 2019); Hao Qin, "On Zen and Martial Arts in Shaolin Kung Fu" (2019); National Intangible Cultural Heritage archive of Shaolin Kung Fu.',
     anatomyKicker:'02 / Five forms · one body map',anatomyTitle:'Anatomy of movement: where force begins',
-    anatomyLead:'Five decomposed Shaolin forms, one-to-one with the five arena cards. Choose a silhouette, then tap the numbered points for annotations.',
-    forceLegend:'Red dashes = force path',pathTitle:'Force path',annotationPlaceholder:'Select a numbered point to read its annotation and the full reading of this form.',
-    anatomyDisclaimer:'Diagrams illustrate movement teaching only; they are not medical diagnoses.',
+    anatomyLead:'Shadow-puppet seamless loop anatomy for five Shaolin forms. Switch forms across the top bar; animated dashed paths trace force flow and power nodes blink for inspection.',
+    forceLegend:'Red dashed flow = force chain',goldLegend:'Soft gold halo = Zen closing',strikeNodesHint:'Blinking dots = power nodes',
+    pathTitle:'Force path',annotationPlaceholder:'Tap any numbered or blinking dot to read its annotation and full form guide.',
+    anatomyDisclaimer:'Shadow-puppet diagrams illustrate movement teaching only; they are not medical diagnoses.',
     pointNote:'Point note',pointError:'Common error at this point',pointLink:'This point in the force chain',formFull:'Full reading of this form',
     detailKey:'Key points',detailEssence:'Movement cues',detailErrors:'Common errors',detailRelation:'Role in force path',detailCard:'Card link',
-    arenaKicker:'03 / Shaolin boy vs. the mind-demon',arenaTitle:'Conquer the mind, not another person',
-    arenaLead:'Drag five cards onto the Shaolin boy: the mind-demon does not lose health, its fog simply thins. Four forms are "martial"; the fifth is "Zen".',
-    arenaStageLabel:'Dohyo · Shaolin boy vs. mind-demon',cardsTitle:'Five forms · strikes',cardsLead:'Strike in order: drag a card onto the boy, click it, or press its number key. Each form targets one part of the body.',
-    hudRound:'Round',hudStance:'Stance',hudDemon:'Demon',kbdHint:'Press <kbd>1</kbd>–<kbd>5</kbd> to strike · <kbd>Space</kbd> next · <kbd>R</kbd> reset',
-    strikeReady:'Engage',strikeReadySub:'Choose a form · strike to conquer the mind',
-    reset:'Start again',complete:'Complete',arenaMini:'The demon is part of practice: <em>makra</em> means the disturbances and attachments of sense-objects. The five cards do not kill an enemy — they conquer the mind.',
-    footer:'Movement diagrams · scholarly disputes remain visible',
-    done:'Five forms complete · the fog clears',bow:'An undisturbed mind is samadhi; unattached to appearances is Zen.',more:'Keep wiping — the text layer reveals more detail.'
+    footer:'Shadow-puppet movement diagrams · scholarly disputes remain visible'
   }
 };
 function pick(o,key){return o&&o[key]!=null?o[key]:''}
@@ -429,12 +854,6 @@ function paintText(){
   var en=context&&context.language==='en';
   document.documentElement.lang=en?'en':'zh-CN';
   document.querySelectorAll('[data-i18n]').forEach(function(el){el.textContent=tr(el.getAttribute('data-i18n'))});
-  document.getElementById('arenaMini').innerHTML=tr('arenaMini');
-  var kh=document.querySelector('.kbd-hint');if(kh)kh.innerHTML=tr('kbdHint');
-  var sb=document.getElementById('strikeBanner');if(sb&&!sb.classList.contains('show')){
-    document.getElementById('strikeName').textContent=tr('strikeReady');
-    document.getElementById('strikeSub').textContent=tr('strikeReadySub');
-  }
   document.getElementById('sourceList').innerHTML='<p>'+tr('sources')+'</p>';
   document.getElementById('wipeStage').setAttribute('aria-label',tr('wipeHint'));
   document.getElementById('langChip').textContent=en?'EN':'ZH';
@@ -446,8 +865,8 @@ function paintText(){
   document.getElementById('fragments').innerHTML=frags.map(function(s){return '<span>'+s+'</span>'}).join('');
   document.getElementById('noteFilm').classList.toggle('en',en);
   document.getElementById('noteClassic').classList.toggle('en',en);
-  renderTabs();renderAction(current);renderCards();renderNarrative();
-  renderFighter(STAND_POSE);
+  renderTabs();renderAction(current);renderNarrative();
+  renderFighter(isMeditating?MEDITATE_POSE:HORSE_STANCE_POSE);
 }
 function go(id){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('active',p.id==='panel-'+id)});
@@ -493,7 +912,10 @@ stage.addEventListener('keydown',function(e){
 
 /* ---------- 02 anatomy ---------- */
 var ACTIONS=[
-  {id:'luohan',name:'罗汉伏虎',sub:'LUOHAN CROUCHING TIGER',enName:'Luohan Crouching Tiger',
+  {id:'luohan',code:'DRILL 01 / ARHAT',duration:'3s',tempoLabel:'3s/次 · 马步起伏',enTempo:'3s/cycle · Horse stance rise/sink',
+   rhythmSummary:'低马步下沉/上起 · 涌泉→虎爪',enRhythmSummary:'Stance rise/sink · Yongquan → claws',
+   strikeIndices:[1,2,6],
+   name:'罗汉伏虎',sub:'LUOHAN CROUCHING TIGER · SEAMLESS LOOP',enName:'Luohan Crouching Tiger',
    pose:{head:[50,22],body:[[50,30],[50,58]],arms:[[[38,36],[30,52],[36,66]],[[62,36],[70,52],[64,66]]],legs:[[[50,58],[30,70],[24,88]],[[50,58],[70,70],[76,88]]]},
    force:[[24,88],[30,70],[50,58],[50,46],[38,36],[31,52],[36,66]],
    path:'足底→踝→膝→胯→腰→脊→肩→肘→腕→虎爪指梢。下盘扎根、腰胯主宰、梢节贯力，不是手臂局部用力。',
@@ -507,7 +929,10 @@ var ACTIONS=[
     {x:31,y:52,label:'肘',en:'Elbow',essence:'坠肘，肘尖向下；避免肘部外扬。',error:'肘部外扬、折肘。',link:'保持力线连续。',enEssence:'Elbow points down; avoid flaring out.',enError:'Elbow flared or sharply bent.',enLink:'Keeps the force line unbroken.'},
     {x:36,y:66,label:'腕 / 虎爪',en:'Wrist / Tiger claw',essence:'腕沉指扣，虎爪含力而不僵；力达指梢。',error:'腕软指僵，或五指用力过猛。',link:'梢节贯力的终点。',enEssence:'Sink the wrist, curl the claws; power without stiffness.',enError:'Wrist limp or fingers rigid.',enLink:'Where force reaches the fingertips.'}
    ]},
-  {id:'staff',name:'少林棍 · 劈山势',sub:'STAFF · SPLIT THE MOUNTAIN',enName:'Staff · Split the Mountain',
+  {id:'staff',code:'DRILL 02 / STAFF',duration:'2.5s',tempoLabel:'2.5s/次 · 斜劈-收回',enTempo:'2.5s/cycle · Slash & recover',
+   rhythmSummary:'举棍·斜劈·收回 · 后脚弧线至棍梢',enRhythmSummary:'Raise · slash · recover · arc to tip',
+   strikeIndices:[1,3,5],
+   name:'少林棍 · 劈山势',sub:'STAFF · SPLIT THE MOUNTAIN',enName:'Staff · Split the Mountain',
    pose:{head:[56,20],body:[[55,28],[52,55]],arms:[[[62,34],[72,44],[78,52]],[[48,34],[42,50],[50,60]]],legs:[[[52,55],[34,70],[28,88]],[[52,55],[70,68],[78,88]]],staff:[[22,76],[90,30]]},
    force:[[28,88],[52,60],[53,45],[62,34],[72,44],[78,52],[90,30]],
    path:'后脚蹬地→转髋→拧腰→送肩→肘→腕→棍把→棍梢。力从地起，经腰胯传导至棍梢。',
@@ -520,7 +945,10 @@ var ACTIONS=[
     {x:52,y:64,label:'髋 / 步',en:'Hip / stance',essence:'蹬地转髋，步法稳住重心；脚下无根则棍飘。',error:'步浮、重心前冲。',link:'力的源头与稳定基础。',enEssence:'Push from the floor and turn the hips.',enError:'Floating stance or centre pitching forward.',enLink:'Root and stability.'},
     {x:88,y:32,label:'棍梢',en:'Staff tip',essence:'力达梢端，走弧线劈落；不是“打得好看”，是“打得整”。',error:'只追求姿势漂亮、梢端无力。',link:'整劲最终显现之处。',enEssence:'Power arrives at the tip along an arc.',enError:'Pretty posture without power at the tip.',enLink:'Where integrated force becomes visible.'}
    ]},
-  {id:'finger',name:'一指禅',sub:'ONE-FINGER ZEN',enName:'One-Finger Zen',
+  {id:'finger',code:'DRILL 03 / FINGER',duration:'4s',tempoLabel:'4s/次 · 指端微震',enTempo:'4s/cycle · Finger micro-tremor',
+   rhythmSummary:'呼吸起伏 · 指尖微颤 · 足底直通食指',enRhythmSummary:'Breathing · finger tremor · sole to index',
+   strikeIndices:[0,3,5],
+   name:'一指禅',sub:'ONE-FINGER ZEN',enName:'One-Finger Zen',
    pose:{head:[48,20],body:[[48,28],[48,56]],arms:[[[58,34],[72,38],[86,38]],[[38,34],[30,48],[36,60]]],legs:[[[48,56],[38,72],[34,88]],[[48,56],[60,72],[64,88]]]},
    force:[[34,88],[38,72],[48,56],[48,44],[58,34],[70,38],[78,38],[88,38]],
    path:'足→腿→腰腹→脊→肩→肘→腕→食指，形成“从地到指”的贯通。所谓“直指”，不是物理性伤害，而是让心魔无法回避、自己被看见。',
@@ -534,7 +962,10 @@ var ACTIONS=[
     {x:48,y:55,label:'丹田 / 腰腹',en:'Dantian / core',essence:'核心稳定，呼吸不憋；腰腹是力源之一。',error:'憋气、腹部松散。',link:'力源之一。',enEssence:'Stable core, unforced breathing.',enError:'Holding breath or a loose abdomen.',enLink:'One of the sources of force.'},
     {x:34,y:88,label:'足 / 腿',en:'Foot / leg',essence:'蹬地生根，下肢支撑力上传；不是只用手指发力。',error:'脚下无根、只用手臂。',link:'整劲的起点。',enEssence:'Rooted feet transmit force upward.',enError:'No root, arm-only effort.',enLink:'Beginning of the chain.'}
    ]},
-  {id:'palm',name:'排山运掌',sub:'PUSH THE MOUNTAIN',enName:'Palm · Push the Mountain',
+  {id:'palm',code:'DRILL 04 / PALM',duration:'3s',tempoLabel:'3s/次 · 推出与收回',enTempo:'3s/cycle · Push & recoil',
+   rhythmSummary:'收掌·双掌推出·归位 · 足底贯穿至掌根',enRhythmSummary:'Draw · dual-palm push · sole to palm root',
+   strikeIndices:[0,2,7],
+   name:'排山运掌',sub:'PUSH THE MOUNTAIN',enName:'Palm · Push the Mountain',
    pose:{head:[50,20],body:[[50,28],[50,55]],arms:[[[40,34],[36,44],[30,52]],[[60,34],[64,44],[70,52]]],legs:[[[50,55],[32,70],[26,88]],[[50,55],[70,68],[80,88]]]},
    force:[[26,88],[32,70],[50,58],[50,48],[50,36],[58,34],[64,44],[70,52]],
    path:'从地到掌的完整传导链：足→踝→膝→胯→腰→脊→肩→肘→腕→掌根。双掌推出时，心魔整体被震退。',
@@ -549,7 +980,10 @@ var ACTIONS=[
     {x:64,y:44,label:'肘',en:'Elbow',essence:'坠肘，肘尖向下；肘不飘。',error:'肘外扬、肘部漂浮。',link:'维持掌根力线。',enEssence:'Elbow down; never floating.',enError:'Elbow flaring or floating.',enLink:'Maintains the line to palm root.'},
     {x:70,y:52,label:'掌根 / 掌心',en:'Palm root',essence:'力达掌根，双掌推出；掌不软、不僵。',error:'掌心松软或过度僵硬。',link:'整劲到达的终点。',enEssence:'Power reaches the palm root, neither limp nor rigid.',enError:'Palms soft or over-stiff.',enLink:'Where the whole-body force arrives.'}
    ]},
-  {id:'seated',name:'达摩坐禅 · 收势',sub:'BODHIDHARMA MEDITATION · CLOSING',enName:'Meditation · Closing',
+  {id:'seated',code:'DRILL 05 / ZEN',duration:'5s',tempoLabel:'5s/次 · 坐禅呼吸',enTempo:'5s/cycle · Zen breathing',
+   rhythmSummary:'闭目合掌·胸腔呼吸 · 淡金色光晕',enRhythmSummary:'Joined palms·breath rise · soft gold halo',
+   strikeIndices:[5,6,2],zenMode:true,
+   name:'达摩坐禅 · 收势',sub:'BODHIDHARMA MEDITATION · CLOSING',enName:'Meditation · Closing',
    pose:{head:[50,20],body:[[50,28],[50,58]],arms:[[[42,34],[38,50],[50,60]],[[58,34],[62,50],[50,60]]],legs:[[[50,58],[32,72],[50,82]],[[50,58],[68,72],[50,82]]],ground:[[24,86],[76,86]]},
    force:[[58,34],[62,50],[50,58],[50,44],[50,64],[50,26]],
    path:'不是向外攻击，而是由外收内：松肩→坠肘→合掌→脊柱松沉→丹田归中→呼吸平稳。最后一招不是攻击，是归位。',
@@ -564,129 +998,243 @@ var ACTIONS=[
     {x:50,y:26,label:'呼吸 / 心',en:'Breath / mind',essence:'呼吸平稳，心神归位；由外收内。',error:'呼吸急促、心神散乱。',link:'“禅”的落点。',enEssence:'Even breath, mind returned home.',enError:'Ragged breath and scattered attention.',enLink:'Where Zen arrives.'}
    ]}
 ];
-/* Full field-by-field notes from the structure document (one entry per form). */
 var DETAILS=[
- {sil:'低马步下蹲、双虎爪下按 / 伏虎式剪影。',
-  ana:'正面与侧面结合，显示下肢桩功、腰胯、肩肘腕指。圆点标注关键身体部位，点击弹出注释。',
-  key:'足底/涌泉、膝、胯/髋、腰/丹田、肩、肘、腕/虎爪。',
-  ess:'低马步下蹲，双虎爪下按 / 伏虎式；蹬地生根，屈膝对准脚尖，开胯坐胯、重心下沉，腰胯合住、气沉丹田，松肩沉肩、坠肘，腕沉指扣、虎爪含力而不僵，力达指梢。整体形成“下盘扎根、腰胯主宰、梢节贯力”的整劲，不是手臂局部用力。',
-  err:'脚趾过度抓扣；膝内扣或跪膝；胯不稳导致上身散；塌腰、翘臀；耸肩；肘部外扬；虎爪僵硬或腕部失位导致力断。',
-  rel:'发力链为足底→踝→膝→胯→腰→脊→肩→肘→腕→虎爪指梢。足底是起点，膝胯腰是传导与主宰，肩肘腕是梢节通道，虎爪是力达梢端。任一环节错误都会破坏“下盘扎根、腰胯主宰、梢节贯力”的整劲。',
-  card:'互动页卡牌①“罗汉伏虎”完成时，调用足底、膝、胯、腰、肩、肘、腕/虎爪标注点作为判定参考。',
-  en:{sil:'Low horse stance with both tiger claws pressing down.',ana:'Front and side views of the stance, hips/waist, shoulders, elbows, wrists and fingers. Tap the numbered points.',key:'Soles, knees, hips, waist/Dantian, shoulders, elbows, wrist and tiger claws.',ess:'Root the feet, align knees with toes, sit into the hips, settle the waist, sink the shoulders, drop the elbows and let power reach the tiger-claw tips. Whole-body power, not arm-only effort.',err:'Toes over-gripping; knees caving or passing the toes; unstable hips; collapsing lower back; raised shoulders; elbows flaring; rigid claws or wrists out of line.',rel:'Sole → ankle → knee → hip → waist → spine → shoulder → elbow → wrist → claw tips. Any break destroys the rooted, hip-led, tip-reaching power.',card:'Card 01 uses the sole, knee, hip, waist, shoulder, elbow and tiger-claw points as judging references.'}},
- {sil:'双手持棍、斜劈 / 立劈的劈山势剪影。',
-  ana:'侧身持棍劈击姿态，显示握把、前手、后手、肩、腰、髋、步法与棍梢。圆点标注关键身体部位，点击弹出注释。',
-  key:'前手（导向手）、后手（发力手）、肩、腰/脊、髋/步、棍梢。',
-  ess:'双手持棍斜劈 / 立劈；前手控制棍路方向、握把不僵，后手催力、握把松紧适度；松肩送肩且与转腰同步，转腰拧脊、以腰为轴，蹬地转髋、步法稳住重心；力达棍梢，走弧线劈落。棍法核心不是“打得好看”，是“打得整”。',
-  err:'只用手臂抡棍；握把过僵；肩部锁死；脚下无根导致棍飘；腰胯不转、只靠手臂；棍梢力点不清或劈落弧线散乱。',
-  rel:'发力链为后脚蹬地→转髋→拧腰→送肩→肘→腕→棍把→棍梢。力从地起，经腰胯传导至棍梢；前手导向、后手催力共同保证棍路与整劲。',
-  card:'互动页卡牌②“少林棍·劈山势”完成时，调用后手、腰/脊、髋/步、棍梢标注点作为判定参考。',
-  en:{sil:'Two-handed staff, diagonal or vertical Split-the-Mountain strike.',ana:'Side-on striking view showing grip, front and rear hands, shoulder, waist, hips, stance and staff tip.',key:'Front guide hand, rear power hand, shoulder, waist/spine, hips/stance, staff tip.',ess:'Front hand guides the line with a supple grip; rear hand drives; shoulder sends in sync with the waist; waist twists as the axis; the feet root and the hips turn; power arrives at the tip along an arc.',err:'Arm-only swinging; rigid grip; locked shoulder; floating stance; waist and hips not turning; unclear tip power or scattered arc.',rel:'Rear foot pushes → hips turn → waist twists → shoulder sends → elbow → wrist → staff butt → staff tip. Front guides, rear drives.',card:'Card 02 uses rear hand, waist/spine, hips/stance and staff-tip points as judging references.'}},
- {sil:'单臂前伸、食指直指的一指禅剪影。',
-  ana:'侧身一指伸出姿态，显示食指、腕、肘、肩、脊柱、丹田与下肢支撑。圆点标注关键身体部位，点击弹出注释。',
-  key:'食指、腕、肘、肩、脊柱、丹田/腰腹、足/腿。',
-  ess:'单臂前伸、食指直指；力点集中、直指而不僵，指节自然贯通；立腕/坐腕保持力线，坠肘不折不抬，松肩沉肩、肩胛稳定；脊柱中正竖直，丹田/腰腹核心稳定、呼吸不憋；蹬地生根，下肢支撑力上传。形成“从地到指”的贯通。所谓“直指”，不是物理性伤害，而是让心魔无法回避、自己被看见。',
-  err:'食指僵硬或指节不贯通；腕折导致力断；肘折或抬肘；耸肩、肩紧导致指力浮；脊柱歪斜或塌腰；憋气；只用手指发力而不借下肢与腰腹。',
-  rel:'发力链为足→腿→腰腹→脊→肩→肘→腕→食指。下肢支撑与腰腹核心是力源，脊柱是传导主干，肩肘腕是传导通道，食指是力点集中端；任一环节断开会破坏“从地到指”的贯通。',
-  card:'互动页卡牌③“一指禅”完成时，调用食指、腕、肩、脊柱、丹田标注点作为判定参考。',
-  en:{sil:'One arm extended, index finger pointing straight.',ana:'Side-on pointing posture showing finger, wrist, elbow, shoulder, spine, Dantian and lower-body support.',key:'Index finger, wrist, elbow, shoulder, spine, Dantian/core, foot and leg.',ess:'Focused but supple pointing; upright wrist, dropped elbow, stable shoulder blade, upright spine and settled core, with the feet rooting. The point is not physical harm: it makes the mind-demon unable to avoid being seen.',err:'Rigid finger; folded wrist; raised or broken elbow; tight shoulders; leaning spine or collapsed waist; held breath; finger-only effort.',rel:'Foot → leg → core → spine → shoulder → elbow → wrist → finger. Any break destroys the ground-to-finger connection.',card:'Card 03 uses finger, wrist, shoulder, spine and Dantian points as judging references.'}},
- {sil:'双掌前推、弓步 / 马步的排山运掌剪影。',
-  ana:'双掌推出姿态，显示足、膝、胯、腰、脊、肩、肘、掌根。圆点标注关键身体部位，点击弹出注释。',
-  key:'足底、膝、胯、腰/丹田、脊/背、肩、肘、掌根/掌心。',
-  ess:'双掌前推、弓步 / 马步；脚掌贴地、蹬地发力，力从地起；膝屈伸传导、不内扣，与胯协调；转胯合胯，胯为下肢与躯干枢纽；腰为主宰、丹田稳定；拔背不僵，脊柱形成传导链；沉肩送肩、肩不耸，坠肘、肘尖向下；力达掌根，双掌推出，掌不软、不僵。',
-  err:'只推手臂；脚掌不贴地或无蹬地；膝内扣；胯不转不合；塌腰或拔背过度；耸肩；肘飘；掌过软或过僵。',
-  rel:'发力链为足→踝→膝→胯→腰→脊→肩→肘→腕→掌根。这是“从地到掌”的完整传导链；双掌推出时，心魔整体被震退。任一环节断开都会导致力散。',
-  card:'互动页卡牌④“排山运掌”完成时，调用足底、胯、腰、肩、掌根标注点作为判定参考，对应解剖页分解动作。',
-  en:{sil:'Both palms pushing forward in bow or horse stance.',ana:'Pushing posture showing feet, knees, hips, waist, spine, shoulders, elbows and palm roots.',key:'Soles, knees, hips, waist/Dantian, spine/back, shoulders, elbows, palm roots.',ess:'Feet rooted and pushing from the floor; knees transmit without caving; hips turn and close; the waist commands with a stable core; the back extends without stiffness; shoulders sink and send; elbows drop; power reaches both palm roots.',err:'Arm-only pushing; feet not grounded; knees caving; hips not turning; waist collapsed or over-extended; raised shoulders; floating elbows; palms too soft or too rigid.',rel:'Foot → ankle → knee → hip → waist → spine → shoulder → elbow → wrist → palm root. Any break scatters the force.',card:'Card 04 uses sole, hip, waist, shoulder and palm-root points as judging references.'}},
- {sil:'坐禅合掌、收势归位的达摩坐禅剪影。',
-  ana:'坐姿合掌收势姿态，显示坐骨/骨盆、脊柱、丹田、肩、肘、腕/掌、呼吸与心神归位。圆点标注关键身体部位，点击弹出注释。',
-  key:'坐骨/骨盆、脊柱、丹田/腹、肩、肘、腕/掌、呼吸/心。',
-  ess:'坐禅合掌、收势归位；坐稳、骨盆中立，下盘安定；脊柱竖直松沉，不挺不塌；自然呼吸、气沉丹田，不憋气、不刻意；松肩、肩胛自然下沉，卸掉前四式的向外之力；坠肘、肘不张，手臂松沉；合掌不紧不松，掌合而心收；呼吸平稳，心神归位，由外收内。前四张牌是“武”，这张牌是“禅”。最后一招不是攻击，是归位。屏幕出现一行字：“内心不乱为定，外不著相为禅。”',
-  err:'骨盆不稳；脊柱过挺或塌陷；憋气或刻意呼吸；耸肩；肘部外张；合掌过紧或过松；心神外驰；把收势当作向外攻击。',
-  rel:'收势不是向外攻击，而是由外收内：松肩→坠肘→合掌→脊柱松沉→丹田归中→呼吸平稳。前四张牌是“武”，这张牌是“禅”；最后一招不是攻击，是归位。',
-  card:'互动页卡牌⑤“达摩坐禅·收势”完成时，调用合掌、脊柱、肩肘、呼吸归位标注点作为判定参考；心魔没有“被打死”，而是在最后一掌收回的瞬间自行消散，少林小子合掌鞠躬。',
-  en:{sil:'Seated meditation with palms joined, returning to stillness.',ana:'Seated closing posture showing sitting bones, spine, Dantian, shoulders, elbows, wrists/palms, breath and mind.',key:'Sitting bones/pelvis, spine, Dantian/abdomen, shoulders, elbows, wrists/palms, breath and mind.',ess:'Sit evenly with a neutral pelvis; spine upright yet relaxed; natural breath settled in the Dantian; release the shoulders and unload the previous four forms; drop the elbows; join the palms without pressure; let the mind return. The first four cards are martial; this one is Zen. The last form is a return, not an attack.',err:'Unsteady pelvis; spine over-straight or collapsed; held or forced breath; raised shoulders; flared elbows; palms pressing or drifting; scattered mind; treating the closing as an outward strike.',rel:'Inward gathering: shoulders release → elbows drop → palms join → spine settles → Dantian centres → breath evens. Not an attack, but a return.',card:'Card 05 uses palms joined, spine, shoulders/elbows and returning breath as judging references; the fog dissolves as the palms return.'}}
+ {sil:'低马步下蹲、双虎爪下按 / 伏虎式皮影剪影。',ana:'正面与侧面结合，显示下肢桩功、腰胯、肩肘腕指。圆点标注关键身体部位，点击弹出注释。',key:'足底/涌泉、膝、胯/髋、腰/丹田、肩、肘、腕/虎爪。',ess:'低马步下蹲，双虎爪下按 / 伏虎式；蹬地生根，屈膝对准脚尖，开胯坐胯、重心下沉，腰胯合住、气沉丹田，松肩沉肩、坠肘，腕沉指扣、虎爪含力而不僵，力达指梢。整体形成“下盘扎根、腰胯主宰、梢节贯力”的整劲，不是手臂局部用力。',err:'脚趾过度抓扣；膝内扣或跪膝；胯不稳导致上身散；塌腰、翘臀；耸肩；肘部外扬；虎爪僵硬或腕部失位导致力断。',rel:'发力链为足底→踝→膝→胯→腰→脊→肩→肘→腕→虎爪指梢。足底是起点，膝胯腰是传导与主宰，肩肘腕是梢节通道，虎爪是力达梢端。任一环节错误都会破坏“下盘扎根、腰胯主宰、梢节贯力”的整劲。',card:'对应[1] 罗汉伏虎 (A)。',en:{sil:'Low horse stance shadow-puppet silhouette with tiger claws pressing down.',ana:'Front and side views of the stance, hips/waist, shoulders, elbows, wrists and fingers. Tap the numbered points.',key:'Soles, knees, hips, waist/Dantian, shoulders, elbows, wrist and tiger claws.',ess:'Root the feet, align knees with toes, sit into the hips, settle the waist, sink the shoulders, drop the elbows and let power reach the tiger-claw tips.',err:'Toes over-gripping; knees caving or passing the toes; unstable hips; collapsing lower back; raised shoulders; elbows flaring; rigid claws.',rel:'Sole → ankle → knee → hip → waist → spine → shoulder → elbow → wrist → claw tips.',card:'Matches [1] Luohan Crouching Tiger (A).'}},
+ {sil:'双手持棍、斜劈 / 立劈的劈山势皮影剪影。',ana:'侧身持棍劈击姿态，显示握把、前手、后手、肩、腰、髋、步法与棍梢。圆点标注关键身体部位，点击弹出注释。',key:'前手（导向手）、后手（发力手）、肩、腰/脊、髋/步、棍梢。',ess:'双手持棍斜劈 / 立劈；前手控制棍路方向、握把不僵，后手催力、握把松紧适度；松肩送肩且与转腰同步，转腰拧脊、以腰为轴，蹬地转髋、步法稳住重心；力达棍梢，走弧线劈落。棍法核心不是“打得好看”，是“打得整”。',err:'只用手臂抡棍；握把过僵；肩部锁死；脚下无根导致棍飘；腰胯不转、只靠手臂；棍梢力点不清或劈落弧线散乱。',rel:'发力链为后脚蹬地→转髋→拧腰→送肩→肘→腕→棍把→棍梢。力从地起，经腰胯传导至棍梢；前手导向、后手催力共同保证棍路与整劲。',card:'对应[2] 少林棍·劈山势 (S)。',en:{sil:'Two-handed staff shadow puppet, diagonal or vertical Split-the-Mountain strike.',ana:'Side-on striking view showing grip, front and rear hands, shoulder, waist, hips, stance and staff tip.',key:'Front guide hand, rear power hand, shoulder, waist/spine, hips/stance, staff tip.',ess:'Front hand guides the line; rear hand drives; shoulder sends in sync with waist; power arrives at the tip along an arc.',err:'Arm-only swinging; rigid grip; locked shoulder; floating stance; waist not turning.',rel:'Rear foot pushes → hips turn → waist twists → shoulder sends → elbow → wrist → staff tip.',card:'Matches [2] Split the Mountain (S).'}},
+ {sil:'单臂前伸、食指直指的一指禅皮影剪影。',ana:'侧身一指伸出姿态，显示食指、腕、肘、肩、脊柱、丹田与下肢支撑。圆点标注关键身体部位，点击弹出注释。',key:'食指、腕、肘、肩、脊柱、丹田/腰腹、足/腿。',ess:'单臂前伸、食指直指；力点集中、直指而不僵，指节自然贯通；立腕/坐腕保持力线，坠肘不折不抬，松肩沉肩、肩胛稳定；脊柱中正竖直，丹田/腰腹核心稳定、呼吸不憋；蹬地生根，下肢支撑力上传。形成“从地到指”的贯通。所谓“直指”，不是物理性伤害，而是让心魔无法回避、自己被看见。',err:'食指僵硬或指节不贯通；腕折导致力断；肘折或抬肘；耸肩、肩紧导致指力浮；脊柱歪斜或塌腰；憋气；只用手指发力而不借下肢与腰腹。',rel:'发力链为足→腿→腰腹→脊→肩→肘→腕→食指。下肢支撑与腰腹核心是力源，脊柱是传导主干，肩肘腕是传导通道，食指是力点集中端。',card:'对应[3] 一指禅 (D)。',en:{sil:'One arm extended shadow puppet, index finger pointing straight.',ana:'Side-on pointing posture showing finger, wrist, elbow, shoulder, spine, Dantian and lower-body support.',key:'Index finger, wrist, elbow, shoulder, spine, Dantian/core, foot and leg.',ess:'Focused but supple pointing; upright wrist, dropped elbow, stable shoulder blade, upright spine and settled core.',err:'Rigid finger; folded wrist; raised or broken elbow; tight shoulders; leaning spine.',rel:'Foot → leg → core → spine → shoulder → elbow → wrist → finger.',card:'Matches [3] One-Finger Zen (D).'}},
+ {sil:'双掌前推、弓步 / 马步的排山运掌皮影剪影。',ana:'双掌推出姿态，显示足、膝、胯、腰、脊、肩、肘、掌根。圆点标注关键身体部位，点击弹出注释。',key:'足底、膝、胯、腰/丹田、脊/背、肩、肘、掌根/掌心。',ess:'双掌前推、弓步 / 马步；脚掌贴地、蹬地发力，力从地起；膝屈伸传导、不内扣，与胯协调；转胯合胯，胯为下肢与躯干枢纽；腰为主宰、丹田稳定；拔背不僵，脊柱形成传导链；沉肩送肩、肩不耸，坠肘、肘尖向下；力达掌根，双掌推出，掌不软、不僵。',err:'只推手臂；脚掌不贴地或无蹬地；膝内扣；胯不转不合；塌腰或拔背过度；耸肩；肘飘；掌过软或过僵。',rel:'发力链为足→踝→膝→胯→腰→脊→肩→肘→腕→掌根。这是“从地到掌”的完整传导链。',card:'对应[4] 排山运掌 (F)。',en:{sil:'Both palms pushing forward shadow puppet in bow or horse stance.',ana:'Pushing posture showing feet, knees, hips, waist, spine, shoulders, elbows and palm roots.',key:'Soles, knees, hips, waist/Dantian, spine/back, shoulders, elbows, palm roots.',ess:'Feet rooted and pushing from the floor; power reaches both palm roots.',err:'Arm-only pushing; feet not grounded; knees caving; waist collapsed.',rel:'Foot → ankle → knee → hip → waist → spine → shoulder → elbow → wrist → palm root.',card:'Matches [4] Push the Mountain (F).'}},
+ {sil:'坐禅合掌、收势归位的达摩坐禅皮影剪影。',ana:'坐姿合掌收势姿态，显示坐骨/骨盆、脊柱、丹田、肩、肘、腕/掌、呼吸与心神归位。圆点标注关键身体部位，点击弹出注释。',key:'坐骨/骨盆、脊柱、丹田/腹、肩、肘、腕/掌、呼吸/心。',ess:'坐禅合掌、收势归位；坐稳、骨盆中立，下盘安定；脊柱竖直松沉，不挺不塌；自然呼吸、气沉丹田，不憋气、不刻意；松肩、肩胛自然下沉，卸掉前四式的向外之力；坠肘、肘不张，手臂松沉；合掌不紧不松，掌合而心收；呼吸平稳，心神归位，由外收内。屏幕出现一行字：“内心不乱为定，外不著相为禅。”',err:'骨盆不稳；脊柱过挺或塌陷；憋气或刻意呼吸；耸肩；肘部外张；合掌过紧或过松；心神外驰。',rel:'收势不是向外攻击，而是由外收内：松肩→坠肘→合掌→脊柱松沉→丹田归中→呼吸平稳。最后一招不是攻击，是归位。',card:'对应[5] 达摩坐禅·收势 (G)。',en:{sil:'Seated meditation shadow puppet with palms joined, returning to stillness.',ana:'Seated closing posture showing sitting bones, spine, Dantian, shoulders, elbows, wrists/palms, breath and mind.',key:'Sitting bones/pelvis, spine, Dantian/abdomen, shoulders, elbows, wrists/palms, breath and mind.',ess:'Sit evenly; join the palms without pressure; let the mind return.',err:'Unsteady pelvis; spine over-straight or collapsed; held breath.',rel:'Shoulders release → elbows drop → palms join → spine settles → dantian centres → breath evens.',card:'Matches [5] Meditation · Closing (G).'}}
 ];
 function en(){return context&&context.language==='en'}
 function labelOf(p){return en()?p.en:p.label}
 function fieldOf(p,k){return en()?p['en'+k]:p[k]}
 var current=0, selected=-1;
-/* Q版少林小子：2.5头身，光头六戒疤，橙黄交领僧衣、深红腰带、木佛珠、深灰护腕与灯笼裤。 */
-var STAND_POSE={head:[50,20],body:[[50,29],[50,58]],arms:[[[39,35],[33,48],[43,57]],[[61,35],[67,48],[57,57]]],legs:[[[50,58],[33,70],[27,88]],[[50,58],[67,70],[73,88]]],staff:[[25,80],[88,18]]};
-var BOW_POSE={head:[50,23],body:[[50,32],[50,59]],arms:[[[39,37],[44,49],[50,53]],[[61,37],[56,49],[50,53]]],legs:[[[50,59],[36,72],[32,88]],[[50,59],[64,72],[68,88]]]};
+var HORSE_STANCE_POSE={head:[50,23],body:[[50,31],[50,58]],arms:[[[38,37],[30,52],[40,62]],[[62,37],[70,52],[60,62]]],legs:[[[50,58],[30,71],[24,88]],[[50,58],[70,71],[76,88]]]};
+var MEDITATE_POSE={head:[50,24],body:[[50,32],[50,58]],arms:[[[41,38],[37,51],[50,57]],[[59,38],[63,51],[50,57]]],legs:[[[50,58],[31,72],[50,82]],[[50,58],[69,72],[50,82]]],ground:[[24,86],[76,86]]};
 function lerp(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]}
+
+/* 皮影节片辅助生成：带圆端包边与竹签/铆钉 */
+function limbSegment(p1,p2,w,cls){
+  var dx=p2[0]-p1[0], dy=p2[1]-p1[1], len=Math.hypot(dx,dy)||1;
+  var nx=(-dy/len)*(w/2), ny=(dx/len)*(w/2);
+  var d='M'+(p1[0]+nx).toFixed(2)+' '+(p1[1]+ny).toFixed(2)+
+        ' L'+(p2[0]+nx).toFixed(2)+' '+(p2[1]+ny).toFixed(2)+
+        ' A'+(w/2).toFixed(2)+' '+(w/2).toFixed(2)+' 0 0 1 '+(p2[0]-nx).toFixed(2)+' '+(p2[1]-ny).toFixed(2)+
+        ' L'+(p1[0]-nx).toFixed(2)+' '+(p1[1]-ny).toFixed(2)+
+        ' A'+(w/2).toFixed(2)+' '+(w/2).toFixed(2)+' 0 0 1 '+(p1[0]+nx).toFixed(2)+' '+(p1[1]+ny).toFixed(2)+' Z';
+  return '<path class="'+cls+'" d="'+d+'"/>';
+}
+function brassRivet(pt,r){
+  var rad=r||1.6;
+  return '<circle class="piying-joint" cx="'+pt[0]+'" cy="'+pt[1]+'" r="'+rad+'"/>'+
+         '<circle class="piying-joint-core" cx="'+pt[0]+'" cy="'+pt[1]+'" r="'+(rad*0.36).toFixed(2)+'"/>';
+}
+
+/* 皮影戏少林小子 SVG 生成器（保留戒疤、僧袍、护腕、念珠，融合半透明牛皮着色、镂空雕花、黄铜活动关节铆钉、操纵竹签线） */
 function boySVG(pose,opts){
   opts=opts||{};var uid=opts.uid||'boy';
   var hx=pose.head[0],hy=pose.head[1],hip=pose.body[pose.body.length-1],neckY=pose.body[0][1]-3;
   var sl=pose.arms[0][0],sr=pose.arms[1][0];
-  var robe='M'+sl[0]+' '+sl[1]+' L'+sr[0]+' '+sr[1]+' L'+(hip[0]+8)+' '+(hip[1]+4)+' L'+(hip[0]-8)+' '+(hip[1]+4)+' Z';
-  var sash='M'+(hip[0]-8)+' '+(hip[1]-2)+' L'+(hip[0]+8)+' '+(hip[1]-2)+' L'+(hip[0]+7)+' '+(hip[1]+3)+' L'+(hip[0]-7)+' '+(hip[1]+3)+' Z';
+  var robe='M'+sl[0]+' '+sl[1]+' L'+sr[0]+' '+sr[1]+' L'+(hip[0]+8.8)+' '+(hip[1]+4.5)+' L'+(hip[0]-8.8)+' '+(hip[1]+4.5)+' Z';
+  var sash='M'+(hip[0]-8.6)+' '+(hip[1]-2.4)+' L'+(hip[0]+8.6)+' '+(hip[1]-2.4)+' L'+(hip[0]+7.8)+' '+(hip[1]+2.8)+' L'+(hip[0]-7.8)+' '+(hip[1]+2.8)+' Z';
   var s='<svg class="'+(opts.className||'')+'" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">';
-  s+='<defs><marker id="arrow-'+uid+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b8432e"/></marker>'+
-     '<filter id="ink-'+uid+'" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="0.9" xChannelSelector="R" yChannelSelector="G"/></filter></defs>';
-  var specks=[[10,14,1.3],[17,29,.7],[8,60,1.1],[16,72,.6],[84,12,1.2],[92,30,.7],[88,64,1.4],[95,78,.8],[73,88,.7],[28,94,.9]];
-  specks.forEach(function(p){s+='<circle class="boy-splash" cx="'+p[0]+'" cy="'+p[1]+'" r="'+p[2]+'"/>'});
-  if(pose.ground)s+='<path class="ground" d="M'+pose.ground[0][0]+' '+pose.ground[0][1]+' L'+pose.ground[1][0]+' '+pose.ground[1][1]+'"/>';
-  if(pose.staff)s+='<line class="boy-staff" x1="'+pose.staff[0][0]+'" y1="'+pose.staff[0][1]+'" x2="'+pose.staff[1][0]+'" y2="'+pose.staff[1][1]+'"/>';
-  pose.legs.forEach(function(l){
-    s+='<path class="boy-pants" d="M'+hip[0]+' '+hip[1]+' L'+l[0][0]+' '+l[0][1]+' L'+l[1][0]+' '+l[1][1]+'"/>';
-    var w=lerp(l[0],l[1],.55);
-    s+='<path class="boy-wrap" d="M'+w[0]+' '+w[1]+' L'+l[1][0]+' '+l[1][1]+'"/>';
-    s+='<ellipse class="boy-shoe" cx="'+l[1][0]+'" cy="'+(l[1][1]+2.5)+'" rx="4.3" ry="2.4"/>';
-  });
-  s+='<path class="boy-robe" d="'+robe+'" filter="url(#ink-'+uid+')"/>';
-  s+='<path class="boy-ink" d="M'+(hip[0]-3)+' '+(neckY+5)+' L'+(hip[0]-6)+' '+(hip[1]-3)+' M'+(hip[0]+3)+' '+(neckY+6)+' L'+(hip[0]+5)+' '+(hip[1]-4)+' M'+(hip[0]-5)+' '+(hip[1]-6)+' l4 3 M'+(hip[0]+4)+' '+(hip[1]-7)+' l-3 3"/>';
-  s+='<rect class="boy-patch" x="'+(hip[0]+2)+'" y="'+(hip[1]-8)+'" width="4.4" height="3.2" rx=".5" transform="rotate(-9 '+(hip[0]+2)+' '+(hip[1]-8)+')"/>';
-  s+='<path class="boy-collar" d="M'+(hx-3)+' '+neckY+' L'+(hx+4)+' '+(neckY+8)+' L'+sr[0]+' '+(sr[1]+3)+'"/>';
-  s+='<path class="boy-collar" d="M'+(hx+3)+' '+neckY+' L'+(hx-3)+' '+(neckY+7)+' L'+sl[0]+' '+(sl[1]+3)+'"/>';
-  s+='<path class="boy-sash" d="'+sash+'"/>';
-  s+='<path class="boy-ink" d="M'+(hip[0]-6)+' '+(hip[1]-6)+' Q'+hx+' '+(hip[1]-3)+' '+(hip[0]+6)+' '+(hip[1]-7)+'"/>';
-  for(var i=0;i<7;i++){
-    s+='<circle class="boy-beads" cx="'+(hx+(i-3)*2.2)+'" cy="'+(neckY+3+(3-Math.abs(i-3))*1.35)+'" r="1.25"/>';
+  s+='<defs><marker id="arrow-'+uid+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#A84232"/></marker></defs>';
+
+  if(opts.zenHalo){
+    s+='<g class="zen-halo active"><circle class="zen-halo-ring" cx="50" cy="54" r="32" stroke-dasharray="6 4"/><circle cx="50" cy="58" r="16" fill="rgba(184,146,58,.16)"/></g>';
   }
-  pose.arms.forEach(function(a){
-    s+='<path class="boy-robe" style="fill:none;stroke:#8d8c76;stroke-width:8" d="M'+a[0][0]+' '+a[0][1]+' L'+a[1][0]+' '+a[1][1]+' L'+a[2][0]+' '+a[2][1]+'" stroke-linecap="round" stroke-linejoin="round"/>';
-    s+='<path class="boy-ink" style="stroke-width:1.1" d="M'+a[0][0]+' '+a[0][1]+' L'+a[1][0]+' '+a[1][1]+' L'+a[2][0]+' '+a[2][1]+'"/>';
-    var g=lerp(a[1],a[2],.62);
-    s+='<path class="boy-guard" d="M'+g[0]+' '+g[1]+' L'+a[2][0]+' '+a[2][1]+'" stroke-width="8" stroke-linecap="round" fill="none"/>';
-    s+='<circle class="boy-hand" cx="'+a[2][0]+'" cy="'+a[2][1]+'" r="2.6"/>';
+  if(pose.ground)s+='<path class="ground" d="M'+pose.ground[0][0]+' '+pose.ground[0][1]+' L'+pose.ground[1][0]+' '+pose.ground[1][1]+'"/>';
+
+  s+='<g class="piying-figure">';
+
+  // 1. 皮影操纵竹签与牵引丝线（头顶主签 + 双手/棍梢签）
+  s+='<line class="piying-rod" x1="'+hx+'" y1="1.5" x2="'+hx+'" y2="'+(hy-11)+'"/>';
+  s+='<circle class="piying-rod-tip" cx="'+hx+'" cy="'+(hy-11)+'" r="1.15"/>';
+  if(!opts.zenMode){
+    var hL=pose.arms[0][2], hR=pose.arms[1][2];
+    s+='<line class="piying-rod" x1="'+(hL[0]-7)+'" y1="4" x2="'+hL[0]+'" y2="'+hL[1]+'"/>';
+    s+='<line class="piying-rod" x1="'+(hR[0]+7)+'" y1="4" x2="'+hR[0]+'" y2="'+hR[1]+'"/>';
+  }
+
+  // 2. 少林齐眉棍（镂空雕刻木纹皮影棍）
+  if(pose.staff){
+    s+='<line class="piying-staff" x1="'+pose.staff[0][0]+'" y1="'+pose.staff[0][1]+'" x2="'+pose.staff[1][0]+'" y2="'+pose.staff[1][1]+'"/>';
+    s+='<line class="piying-staff-core" x1="'+pose.staff[0][0]+'" y1="'+pose.staff[0][1]+'" x2="'+pose.staff[1][0]+'" y2="'+pose.staff[1][1]+'"/>';
+    s+=brassRivet(pose.staff[0],1.5)+brassRivet(pose.staff[1],1.5);
+  }
+
+  // 3. 下肢皮影节片（大腿 + 膝盖铆钉 + 小腿绑腿 + 虎头僧鞋）
+  pose.legs.forEach(function(l){
+    var hipPt=[hip[0],hip[1]], kneePt=l[0], anklePt=l[1];
+    s+=limbSegment(hipPt,kneePt,8.8,'piying-pants');
+    // 大腿镂空雕花缝隙
+    var thMid=lerp(hipPt,kneePt,.5);
+    s+='<circle class="piying-cutout" cx="'+thMid[0].toFixed(1)+'" cy="'+thMid[1].toFixed(1)+'" r="1.35"/>';
+    // 小腿与绑腿皮影片
+    s+=limbSegment(kneePt,anklePt,7.4,'piying-pants');
+    var wrapStart=lerp(kneePt,anklePt,.32);
+    s+=limbSegment(wrapStart,anklePt,6.8,'piying-wrap');
+    // 绑腿交叉皮雕纹路
+    var wMid1=lerp(wrapStart,anklePt,.33), wMid2=lerp(wrapStart,anklePt,.68);
+    s+='<circle class="piying-cutout" cx="'+wMid1[0].toFixed(1)+'" cy="'+wMid1[1].toFixed(1)+'" r="0.95"/>';
+    s+='<circle class="piying-cutout" cx="'+wMid2[0].toFixed(1)+'" cy="'+wMid2[1].toFixed(1)+'" r="0.95"/>';
+    // 僧鞋（带皮影云头镶边）
+    s+='<ellipse class="piying-shoe" cx="'+anklePt[0]+'" cy="'+(anklePt[1]+2.4)+'" rx="4.8" ry="2.6"/>';
+    s+='<circle class="piying-cutout" cx="'+(anklePt[0]+(anklePt[0]>=50?1.6:-1.6))+'" cy="'+(anklePt[1]+2.2)+'" r="0.8"/>';
+    // 膝关节黄铜铆钉
+    s+=brassRivet(kneePt,1.8);
   });
-  s+='<ellipse class="boy-ear" cx="'+(hx-10.2)+'" cy="'+(hy+1.5)+'" rx="2.3" ry="3.4"/><ellipse class="boy-ear" cx="'+(hx+10.2)+'" cy="'+(hy+1.5)+'" rx="2.3" ry="3.4"/>';
-  s+='<ellipse class="boy-head" cx="'+hx+'" cy="'+hy+'" rx="10.4" ry="11.4"/>';
-  [-7.2,-9.3].forEach(function(dy){[-2.6,0,2.6].forEach(function(dx){s+='<circle class="boy-scar" cx="'+(hx+dx)+'" cy="'+(hy+dy)+'" r=".8"/>'})});
-  s+='<path class="boy-brow" d="M'+(hx-6.4)+' '+(hy-2.8)+' Q'+(hx-4)+' '+(hy-4.8)+' '+(hx-1.5)+' '+(hy-2.7)+'"/>';
-  s+='<path class="boy-brow" d="M'+(hx+1.5)+' '+(hy-2.7)+' Q'+(hx+4)+' '+(hy-4.8)+' '+(hx+6.4)+' '+(hy-2.8)+'"/>';
+
+  // 4. 躯干交领僧袍皮影主体 + 传统皮影镂空云纹窗孔
+  s+='<path class="piying-robe" d="'+robe+'"/>';
+  // 僧袍交领与襟边
+  s+='<path class="piying-robe-trim" d="M'+(hx-3.2)+' '+neckY+' L'+(hx+4.2)+' '+(neckY+8.5)+' L'+sr[0]+' '+(sr[1]+3.2)+'"/>';
+  s+='<path class="piying-robe-trim" d="M'+(hx+3.2)+' '+neckY+' L'+(hx-3.2)+' '+(neckY+7.5)+' L'+sl[0]+' '+(sl[1]+3.2)+'"/>';
+  // 僧袍下摆镂空雕花（方胜与透光圆孔）
+  var chestY=neckY+11.5, hemY=hip[1]+1.5;
+  s+='<polygon class="piying-cutout" points="'+(hx-4.5)+','+chestY+' '+(hx-3.1)+','+(chestY-1.5)+' '+(hx-1.7)+','+chestY+' '+(hx-3.1)+','+(chestY+1.5)+'"/>';
+  s+='<polygon class="piying-cutout" points="'+(hx+4.5)+','+chestY+' '+(hx+3.1)+','+(chestY-1.5)+' '+(hx+1.7)+','+chestY+' '+(hx+3.1)+','+(chestY+1.5)+'"/>';
+  s+='<circle class="piying-cutout" cx="'+(hx-5.2)+'" cy="'+hemY+'" r="1.25"/>';
+  s+='<circle class="piying-cutout" cx="'+(hx+5.2)+'" cy="'+hemY+'" r="1.25"/>';
+  // 腰带与镂空带扣
+  s+='<path class="piying-sash" d="'+sash+'"/>';
+  s+='<rect class="piying-cutout" x="'+(hip[0]-2.2)+'" y="'+(hip[1]-1.4)+'" width="4.4" height="2.8" rx="0.8"/>';
+  // 少林佛珠念珠
+  for(var i=0;i<7;i++){
+    s+='<circle class="piying-beads" cx="'+(hx+(i-3)*2.2)+'" cy="'+(neckY+3+(3-Math.abs(i-3))*1.35)+'" r="1.3"/>';
+  }
+  // 丹田/腰胯中心铆钉
+  s+=brassRivet([hip[0],hip[1]-0.2],1.9);
+
+  // 5. 双臂皮影节片（大臂袖片 + 肘铆钉 + 小臂护腕 + 镂空纹 + 皮影手掌）
+  pose.arms.forEach(function(a,aIdx){
+    var shPt=a[0], elPt=a[1], wrPt=a[2];
+    var isTremorArm=(opts.tremorArm && aIdx===1);
+    if(isTremorArm)s+='<g class="finger-tremor">';
+    // 大臂僧袖节片
+    s+=limbSegment(shPt,elPt,8.2,'piying-sleeve');
+    var armCut=lerp(shPt,elPt,.5);
+    s+='<circle class="piying-cutout" cx="'+armCut[0].toFixed(1)+'" cy="'+armCut[1].toFixed(1)+'" r="1.15"/>';
+    // 小臂与少林护腕节片
+    s+=limbSegment(elPt,wrPt,7.0,'piying-skin');
+    var guardStart=lerp(elPt,wrPt,.42);
+    s+=limbSegment(guardStart,wrPt,7.4,'piying-guard');
+    var gMid=lerp(guardStart,wrPt,.5);
+    s+='<circle class="piying-cutout" cx="'+gMid[0].toFixed(1)+'" cy="'+gMid[1].toFixed(1)+'" r="1.05"/>';
+    // 皮影手掌/虎爪/指端
+    s+='<circle class="piying-hand" cx="'+wrPt[0]+'" cy="'+wrPt[1]+'" r="3.1"/>';
+    if(opts.tremorArm && aIdx===1){
+      // 一指禅食指直指皮影尖端
+      s+='<path class="piying-hand" d="M'+(wrPt[0]+2)+' '+(wrPt[1]-1.2)+' L'+(wrPt[0]+6.4)+' '+wrPt[1]+' L'+(wrPt[0]+2)+' '+(wrPt[1]+1.2)+' Z"/>';
+    }
+    // 肩、肘、腕活动铆钉
+    s+=brassRivet(shPt,1.75)+brassRivet(elPt,1.65)+brassRivet(wrPt,1.25);
+    if(isTremorArm)s+='</g>';
+  });
+
+  // 6. 皮影少林小子头部（透光牛皮面庞 + 镂空眼眉 + 保留六点少林戒疤）
+  s+='<ellipse class="piying-skin-dark" cx="'+(hx-10.4)+'" cy="'+(hy+1.5)+'" rx="2.4" ry="3.6"/>';
+  s+='<ellipse class="piying-skin-dark" cx="'+(hx+10.4)+'" cy="'+(hy+1.5)+'" rx="2.4" ry="3.6"/>';
+  s+='<ellipse class="piying-skin" cx="'+hx+'" cy="'+hy+'" rx="10.5" ry="11.5"/>';
+  // 额顶内轮廓线（皮影头盔/光头光影线）
+  s+='<path class="piying-ink" style="opacity:.32" d="M'+(hx-7.5)+' '+(hy-4.8)+' A8.8 8.8 0 0 1 '+(hx+7.5)+' '+(hy-4.8)+'"/>';
+  // 保留少林六点戒疤（两排三点，清晰醒目）
+  [-7.1,-9.2].forEach(function(dy){
+    [-2.7,0,2.7].forEach(function(dx){
+      s+='<circle class="piying-scar" cx="'+(hx+dx)+'" cy="'+(hy+dy)+'" r=".95"/>';
+    });
+  });
+  // 皮影英气剑眉
+  s+='<path class="piying-brow" d="M'+(hx-6.6)+' '+(hy-2.8)+' Q'+(hx-4)+' '+(hy-5.0)+' '+(hx-1.4)+' '+(hy-2.6)+'"/>';
+  s+='<path class="piying-brow" d="M'+(hx+1.4)+' '+(hy-2.6)+' Q'+(hx+4)+' '+(hy-5.0)+' '+(hx+6.6)+' '+(hy-2.8)+'"/>';
+  // 皮影镂空杏眼
   [-1,1].forEach(function(k){
     var ex=hx+k*3.7;
-    s+='<path class="boy-eye" d="M'+(ex-2.2)+' '+(hy+.7)+' Q'+ex+' '+(hy-.7)+' '+(ex+2.2)+' '+(hy+.7)+' Q'+ex+' '+(hy+1.7)+' '+(ex-2.2)+' '+(hy+.7)+' Z" fill="#f4f1e2" stroke="#2f372c" stroke-width=".9"/>';
-    s+='<circle class="boy-pupil" cx="'+(ex+k*.25)+'" cy="'+(hy+.6)+'" r="1.05"/>';
+    s+='<path class="piying-eye" d="M'+(ex-2.3)+' '+(hy+.7)+' Q'+ex+' '+(hy-.8)+' '+(ex+2.3)+' '+(hy+.7)+' Q'+ex+' '+(hy+1.8)+' '+(ex-2.3)+' '+(hy+.7)+' Z"/>';
+    s+='<circle class="piying-pupil" cx="'+(ex+k*.25)+'" cy="'+(hy+.6)+'" r="1.25"/>';
   });
-  s+='<path class="boy-ink" style="stroke-width:.9" d="M'+hx+' '+(hy+1.6)+' L'+(hx-.7)+' '+(hy+4)+' L'+(hx+.8)+' '+(hy+4)+'"/>';
-  s+='<path class="boy-mouth" d="M'+(hx-2)+' '+(hy+6.3)+' Q'+hx+' '+(hy+7.2)+' '+(hx+2)+' '+(hy+6.3)+'"/>';
-  if(opts.force)s+='<path class="force" style="marker-end:url(#arrow-'+uid+')" d="'+opts.force.map(function(p,i){return (i?'L':'M')+p[0]+' '+p[1]}).join(' ')+'"/>';
+  // 皮影鼻梁与朱砂抿唇
+  s+='<path class="piying-ink" style="stroke-width:1.15" d="M'+hx+' '+(hy+1.5)+' L'+(hx-.8)+' '+(hy+4.1)+' L'+(hx+.9)+' '+(hy+4.1)+'"/>';
+  s+='<path class="piying-mouth" d="M'+(hx-2.2)+' '+(hy+6.3)+' Q'+hx+' '+(hy+7.3)+' '+(hx+2.2)+' '+(hy+6.3)+'"/>';
+  // 颈部活动铆钉
+  s+=brassRivet([hx,neckY+1.2],1.4);
+
+  s+='</g>';
+
+  // 7. 发力传导流光路径（叠加在皮影之上）
+  if(opts.force && !opts.zenMode){
+    var dStr=opts.force.map(function(p,i){return (i?'L':'M')+p[0]+' '+p[1]}).join(' ');
+    s+='<path class="force-glow" d="'+dStr+'"/>';
+    s+='<path class="force" style="marker-end:url(#arrow-'+uid+')" d="'+dStr+'"/>';
+  }
   return s+'</svg>';
 }
-function svgFor(pose,force){return boySVG(pose,{uid:'fig',className:'figure-svg',force:force})}
-function renderFighter(pose){document.getElementById('fighter').innerHTML=boySVG(pose||STAND_POSE,{uid:'arena'})}
+function svgForAction(act){
+  return boySVG(act.pose,{
+    uid:'fig-'+act.id,
+    className:'figure-svg loop-'+act.id,
+    force:act.force,
+    zenMode:!!act.zenMode,
+    zenHalo:!!act.zenMode,
+    tremorArm:act.id==='finger'
+  });
+}
+function renderFighter(pose){document.getElementById('fighter').innerHTML=boySVG(pose||HORSE_STANCE_POSE,{uid:'arena'})}
+
+window.ShaolinAnatomyMedia=window.ShaolinAnatomyMedia||{
+  mount:function(actionId,config){
+    var slot=document.getElementById('mediaSlot');
+    if(!slot)return;
+    slot.innerHTML='';
+    if(config&&config.webmUrl){
+      var v=document.createElement('video');
+      v.src=config.webmUrl;v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;
+      slot.appendChild(v);slot.classList.add('active');
+    }else if(config&&config.lottieData&&window.lottie&&window.lottie.loadAnimation){
+      slot.classList.add('active');
+      window.lottie.loadAnimation({container:slot,renderer:'svg',loop:true,autoplay:true,animationData:config.lottieData});
+    }else{
+      slot.classList.remove('active');
+    }
+  }
+};
+
 function renderTabs(){
   var box=document.getElementById('actionTabs');
   box.innerHTML=ACTIONS.map(function(a,i){
     return '<button data-i="'+i+'" class="'+(i===current?'active':'')+'" aria-label="'+a.name+'">'+
-      boySVG(a.pose,{uid:'tab'+i,className:'tab-boy'})+
-      '<span>'+(en()?a.enName:a.name)+'</span><small>0'+(i+1)+'</small></button>';
+      boySVG(a.pose,{uid:'tab'+i,className:'tab-boy',zenMode:!!a.zenMode,tremorArm:a.id==='finger'})+
+      '<span>'+(en()?a.enName:a.name)+'</span><small>0'+(i+1)+' · '+a.duration+'</small></button>';
   }).join('');
   box.querySelectorAll('button').forEach(function(b){b.onclick=function(){current=+b.getAttribute('data-i');selected=-1;renderTabs();renderAction(current)}});
 }
 function renderAction(i){
   var a=ACTIONS[i];
-  document.getElementById('figureSvg').innerHTML=svgFor(a.pose,a.force);
+  document.getElementById('figureSvg').outerHTML=svgForAction(a).replace('<svg ','<svg id="figureSvg" ');
+  document.getElementById('drillCode').textContent=a.code;
+  document.getElementById('loopTempoLabel').textContent='CYCLE · '+(en()?a.enTempo:a.tempoLabel);
+  document.getElementById('hudDrillBadge').textContent=a.code+' · '+a.duration.toUpperCase();
+  document.getElementById('hudPhaseBadge').textContent=a.zenMode?(en()?'ZEN HALO · 5S':'坐禅光晕 · 收内'):(en()?'SHADOW PUPPET · LOOP':'皮影流光 · 循环');
   document.getElementById('actionName').textContent=en()?a.enName:a.name;
   document.getElementById('actionSub').textContent=a.sub;
+  document.getElementById('rhythmStrip').innerHTML=
+    '<span class="rhythm-chip">'+(en()?a.enRhythmSummary:a.rhythmSummary)+'</span>'+
+    '<span class="rhythm-chip">'+(en()?'Nodes: ':'高亮节点: ')+a.strikeIndices.map(function(idx){return '#'+(idx+1)+' '+labelOf(a.points[idx])}).join(' · ')+'</span>';
+
+  var leg=document.getElementById('figureLegend');
+  if(a.zenMode){
+    leg.innerHTML='<i class="gold-leg"></i><span>'+tr('goldLegend')+'</span> · <span>'+tr('strikeNodesHint')+'</span>';
+  }else{
+    leg.innerHTML='<i></i><span>'+tr('forceLegend')+'</span> · <span>'+tr('strikeNodesHint')+'</span>';
+  }
+
   var wrap=document.getElementById('figureWrap');
   wrap.querySelectorAll('.hotspot').forEach(function(n){n.remove()});
   a.points.forEach(function(p,idx){
+    var isStrike=a.strikeIndices&&a.strikeIndices.indexOf(idx)>=0;
+    var cls='hotspot'+(idx===selected?' active':'')+(isStrike?(a.zenMode?' zen-point':' strike-point'):'');
     var b=document.createElement('button');
-    b.className='hotspot'+(idx===selected?' active':'');
+    b.className=cls;
     b.style.left=p.x+'%';b.style.top=p.y+'%';
     b.textContent=String(idx+1);
     b.setAttribute('aria-label',labelOf(p));
@@ -712,129 +1260,430 @@ document.addEventListener('keydown',function(e){
   }
 });
 
-/* ---------- 03 arena ---------- */
-var CARDS=[
-  {n:1,name:'罗汉伏虎',en:'Crouching Tiger',call:'伏虎！',enCall:'TIGER!',effect:'心魔外层雾气被剪开一道裂口',enEffect:'A tear opens in the outer fog'},
-  {n:2,name:'少林棍·劈山势',en:'Staff · Split Mountain',call:'劈山！',enCall:'SPLIT!',effect:'心魔雾气被劈开一道深痕',enEffect:'A deep gash splits the fog'},
-  {n:3,name:'一指禅',en:'One-Finger Zen',call:'一指！',enCall:'ONE FINGER!',effect:'心魔的“核”被点中，雾气剧烈震动',enEffect:'The core is touched; the fog shudders'},
-  {n:4,name:'排山运掌',en:'Push the Mountain',call:'排山！',enCall:'PUSH!',effect:'双掌推出，心魔整体被震退',enEffect:'Both palms drive the fog back'},
-  {n:5,name:'达摩坐禅·收势',en:'Meditation · Closing',call:'归位。',enCall:'RETURN.',effect:'心魔没有“被打死”，而是在最后一掌收回的瞬间自行消散',enEffect:'Not defeated — the fog dissolves as the palms return'}
+/* ==========================================================================
+   03 · 少林小子擂台战（完整交互逻辑）
+   ========================================================================== */
+var FIVE_SKILLS=[
+  {id:'vuhu',short:'罗汉伏虎',bind:'A',num:'[1]',actionIndex:0,drop:25,
+   effect:'施展「罗汉伏虎」，双掌下按削减心魔一层雾气！'},
+  {id:'pishan',short:'少林棍·劈山势',bind:'S',num:'[2]',actionIndex:1,drop:25,
+   effect:'施展「少林棍·劈山势」，长棍斜劈削减心魔一层雾气！'},
+  {id:'yizhi',short:'一指禅',bind:'D',num:'[3]',actionIndex:2,drop:25,
+   effect:'施展「一指禅」，直指核心打断心魔蓄力！'},
+  {id:'paishan',short:'排山运掌',bind:'F',num:'[4]',actionIndex:3,drop:25,
+   effect:'施展「排山运掌」，双掌推山震散一层雾气！'},
+  {id:'shoushi',short:'达摩坐禅·收势',bind:'G',num:'[5]',actionIndex:4,drop:0,
+   effect:'内心不乱为定，外不著相为禅。'}
 ];
-var USED_KEYS=['1','2','3','4','5'];
-function glyph(a){return boySVG(ACTIONS[a.n-1].pose,{uid:'card'+a.n,className:'card-boy glyph'})}
-var used=[false,false,false,false,false], dragIndex=-1, ghost=null;
-function nextIndex(){for(var i=0;i<used.length;i++){if(!used[i])return i}return -1}
-function renderCards(){
-  var row=document.getElementById('cardRow'),next=nextIndex();
-  row.innerHTML=CARDS.map(function(c,i){
-    var cls='card'+(used[i]?' used':'')+(i===next?' next':'');
-    return '<button class="'+cls+'" data-i="'+i+'" aria-label="'+(en()?c.en:c.name)+'">'+
-      '<span class="key">'+USED_KEYS[i]+'</span><span class="num">0'+c.n+'</span>'+glyph(c)+
-      '<span class="name">'+(en()?c.en:c.name)+'</span><span class="note">'+c.effect+'</span></button>';
-  }).join('');
-  row.querySelectorAll('.card').forEach(function(b){b.onclick=function(){var i=+b.getAttribute('data-i');if(!used[i])play(i)}});
-  document.getElementById('progress').innerHTML=used.map(function(u){return '<b class="'+(u?'on':'')+'"></b>'}).join('');
-  document.getElementById('roundNum').textContent=next<0?'05':('0'+(next+1));
+
+var WEAKNESS_POOL=[
+  {title:'心魔正在蓄力，需使用「一指禅」打断！',sub:'按快捷键 D 或点击 [3] 一指禅，超时未操作定力将下降！',counterIdx:2},
+  {title:'心魔外层黑雾翻涌，需使用「罗汉伏虎」破雾化！',sub:'按快捷键 A 或点击 [1] 罗汉伏虎，超时未操作定力将下降！',counterIdx:0},
+  {title:'心魔浓重黑气凝聚，需使用「少林棍·劈山势」劈开！',sub:'按快捷键 S 或点击 [2] 少林棍·劈山势，超时未操作定力将下降！',counterIdx:1},
+  {title:'心魔执念骤起反扑，需使用「排山运掌」震退！',sub:'按快捷键 F 或点击 [4] 排山运掌，超时未操作定力将下降！',counterIdx:3}
+];
+
+var TURN_SECONDS=10;
+var fogLevel=100, stanceLevel=80;
+var usedFirstFour={};
+var moveSequence=[];
+var roundNum=1, timeLeft=TURN_SECONDS, weakIdx=0;
+var battleActive=false, isMeditating=false, isSettled=false;
+var timerInterval=null, gatherInterval=null, settleTimeout=null;
+var audioCtx=null, masterGain=null;
+
+function ensureAudio(){
+  if(!soundOn)return null;
+  try{
+    var C=window.AudioContext||window.webkitAudioContext;
+    if(!C)return null;
+    if(!audioCtx){
+      audioCtx=new C();
+      masterGain=audioCtx.createGain();
+      masterGain.gain.value=0.07;
+      masterGain.connect(audioCtx.destination);
+    }
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    return audioCtx;
+  }catch(_){return null}
 }
-function flash(el,cls,delay){
-  el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);
-  setTimeout(function(){el.classList.remove(cls)},delay||1000);
+function playTone(freq,dur){
+  var ctx=ensureAudio();if(!ctx||!masterGain)return;
+  var o=ctx.createOscillator(),g=ctx.createGain();
+  o.type='triangle';o.frequency.value=freq||220;
+  g.gain.setValueAtTime(1,ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+(dur||0.16));
+  o.connect(g);g.connect(masterGain);
+  o.start();o.stop(ctx.currentTime+(dur||0.16));
 }
-function play(i){
-  if(disposed||used[i]||paused)return;
-  used[i]=true;var count=used.filter(Boolean).length,fog=1-count/5;
-  var stage=document.getElementById('arenaStage');
-  var demon=document.getElementById('demon'),eyes=document.getElementById('demonEyes'),f=document.getElementById('fighter');
-  demon.style.setProperty('--fog',String(fog));eyes.style.setProperty('--fog',String(fog));
-  document.getElementById('demonBar').style.width=Math.round(fog*100)+'%';
-  document.getElementById('stanceBar').style.width='38%';
-  setTimeout(function(){document.getElementById('stanceBar').style.width='100%'},620);
-  renderFighter(ACTIONS[i].pose);
-  f.classList.remove('idle','bow','act','act-0','act-1','act-2','act-3','act-4');
-  void f.offsetWidth;f.classList.add('act','act-'+i);
-  setTimeout(function(){if(disposed)return;f.classList.remove('act','act-'+i);f.classList.add('idle')},1000);
-  stage.classList.add('charge');flash(stage,'shake',520);
-  setTimeout(function(){if(!disposed)stage.classList.remove('charge')},900);
-  var banner=document.getElementById('strikeBanner');
-  document.getElementById('strikeName').textContent=en()?CARDS[i].enCall:CARDS[i].call;
-  document.getElementById('strikeSub').textContent=en()?CARDS[i].en:CARDS[i].name;
-  flash(banner,'show',1150);
-  flash(demon,'hit',760);
-  flash(document.getElementById('impact'),'go',820);
-  var txt=document.getElementById('effectText');
-  txt.textContent=en()?CARDS[i].enEffect:CARDS[i].effect;
-  flash(txt,'show',1950);
-  renderCards();
-  if(used.every(Boolean)){
-    setTimeout(function(){
-      if(disposed)return;
-      demon.style.opacity='0';eyes.style.opacity='0';
-      document.getElementById('bowLine').textContent=tr('bow');
-      document.getElementById('bowLine').classList.add('show');
-      renderFighter(BOW_POSE);
-      f.classList.remove('idle','act','act-0','act-1','act-2','act-3','act-4');f.classList.add('bow');
-      document.getElementById('strikeName').textContent=en()?'Complete':'五式圆满';
-      document.getElementById('strikeSub').textContent=en()?'The mind is at peace':'降伏其心 · 心魔散去';
-      flash(banner,'show',2400);
-      send('wudao:complete',{result:{completed:true,summary:en()?'Five forms: mind-demon dissolved':'五式已成：心魔散去'}});
-    },1000);
+
+function firstFourUsedCount(){
+  return [0,1,2,3].filter(function(i){return !!usedFirstFour[i]}).length;
+}
+function isShoushiUnlocked(){
+  return firstFourUsedCount()>=4;
+}
+
+function updateHUD(){
+  var f=Math.max(0,Math.min(100,fogLevel));
+  var s=Math.max(0,Math.min(100,stanceLevel));
+  document.getElementById('stanceBar').style.width=s+'%';
+  document.getElementById('stanceVal').textContent=s+'%';
+  document.getElementById('demonBar').style.width=f+'%';
+  document.getElementById('demonVal').textContent=f+'%';
+
+  var demon=document.getElementById('demon');
+  demon.style.setProperty('--fog',String(f/100));
+  demon.style.setProperty('--dscale',String(0.45 + (f/100)*0.55));
+
+  var statusWord=isMeditating?'收势':(battleActive?'迎战':'准备');
+  document.getElementById('roundLabel').textContent='第 '+roundNum+' 回合 · '+statusWord;
+
+  var sec=Math.max(0,Math.ceil(timeLeft));
+  var urgent=sec<=3 && battleActive && !isSettled && !isMeditating;
+
+  var badge=document.getElementById('timerBadge');
+  badge.textContent=sec+'s';
+  badge.classList.toggle('urgent',urgent);
+
+  var ratio=Math.max(0,Math.min(1,timeLeft/TURN_SECONDS));
+  var pct=(ratio*100).toFixed(1)+'%';
+  var incense=document.getElementById('incenseBody');
+  incense.style.width=pct;
+  incense.classList.toggle('urgent',urgent);
+  var spark=document.getElementById('incenseSpark');
+  spark.style.left=pct;
+  spark.style.display=ratio>0?'block':'none';
+
+  var arc=document.getElementById('beadArc');
+  if(arc)arc.setAttribute('stroke-dashoffset',String((1-ratio)*88));
+  document.getElementById('beadsRing').classList.toggle('urgent',urgent);
+
+  var unlocked=isShoushiUnlocked();
+  var shoushiBtn=document.getElementById('shoushiKey');
+  shoushiBtn.classList.toggle('unlocked',unlocked || isMeditating);
+
+  document.querySelectorAll('#skillKeys .skill-key').forEach(function(btn,idx){
+    if(idx<4){
+      btn.classList.toggle('used-state',!!usedFirstFour[idx]);
+    }
+  });
+
+  var count4=firstFourUsedCount();
+  document.getElementById('unlockStatusText').textContent=unlocked
+    ?'四式已通 · [5] 达摩坐禅·收势 (G) 已高亮解锁！'
+    :'收势进度：已悟 '+count4+' / 4 招（用完前四招后解锁 [5]）';
+}
+
+function updateWeaknessAlert(){
+  var box=document.getElementById('warnBox');
+  if(!battleActive || isSettled || isMeditating){
+    box.classList.add('hidden');
+    return;
+  }
+  box.classList.remove('hidden');
+  var w=WEAKNESS_POOL[weakIdx % WEAKNESS_POOL.length];
+  document.getElementById('warnTitle').textContent=w.title;
+  document.getElementById('warnSub').textContent=w.sub;
+  document.querySelectorAll('#skillKeys .skill-key').forEach(function(btn,idx){
+    btn.classList.toggle('counter-glow',idx===w.counterIdx && !usedFirstFour[idx]);
+  });
+}
+
+function spawnParticles(mode){
+  var wrap=document.getElementById('fogParticles');
+  if(mode==='gather'){
+    if(isSettled || isMeditating || fogLevel<=0 || !battleActive)return;
+    for(var g=0;g<4;g++){
+      var gp=document.createElement('span');
+      gp.className='fog-p gather-amb';
+      var sz=6+Math.round(Math.random()*6);
+      gp.style.width=sz+'px';gp.style.height=sz+'px';
+      gp.style.left='46%';gp.style.top='48%';
+      var ang=Math.random()*Math.PI*2;
+      var rad=44+Math.random()*38;
+      gp.style.setProperty('--gx',Math.round(Math.cos(ang)*rad)+'px');
+      gp.style.setProperty('--gy',Math.round(Math.sin(ang)*rad)+'px');
+      wrap.appendChild(gp);
+      setTimeout((function(el){return function(){if(el.parentNode)el.parentNode.removeChild(el)}})(gp),2450);
+    }
+    return;
+  }
+  var isWind=(mode==='wind-light');
+  var count=isWind?36:14;
+  for(var i=0;i<count;i++){
+    var p=document.createElement('span');
+    p.className='fog-p'+(isWind?' wind-light':' burst');
+    var pSz=isWind?(7+Math.round(Math.random()*8)):(8+Math.round(Math.random()*10));
+    p.style.width=pSz+'px';p.style.height=pSz+'px';
+    p.style.left=(18+Math.random()*64)+'%';
+    p.style.top=(20+Math.random()*60)+'%';
+    var angle=(Math.PI*2/count)*i + (Math.random()-.5)*.4;
+    var dist=isWind?(75+Math.random()*95):(34+Math.random()*46);
+    var tx=isWind?(60+Math.random()*115):Math.round(Math.cos(angle)*dist);
+    var ty=isWind?(-20-Math.random()*65):Math.round(Math.sin(angle)*dist);
+    p.style.setProperty('--tx',Math.round(tx)+'px');
+    p.style.setProperty('--ty',Math.round(ty)+'px');
+    wrap.appendChild(p);
+    void p.offsetWidth;
+    setTimeout((function(el){return function(){if(el.parentNode)el.parentNode.removeChild(el)}})(p),isWind?3700:780);
   }
 }
-var row=document.getElementById('cardRow');
-row.addEventListener('pointerdown',function(e){
-  var card=e.target.closest('.card');if(!card||disposed||paused)return;
-  dragIndex=+card.getAttribute('data-i');
-  ghost=document.createElement('div');ghost.className='drag-ghost';ghost.textContent=en()?CARDS[dragIndex].en:CARDS[dragIndex].name;
-  document.body.appendChild(ghost);moveGhost(e);card.setPointerCapture(e.pointerId);e.preventDefault();
-});
-function moveGhost(e){if(!ghost)return;ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px'}
-row.addEventListener('pointermove',function(e){
-  if(dragIndex<0)return;moveGhost(e);
-  var z=document.getElementById('dropZone').getBoundingClientRect();
-  document.getElementById('dropZone').classList.toggle('over',e.clientX>=z.left&&e.clientX<=z.right&&e.clientY>=z.top&&e.clientY<=z.bottom);
-});
-function endDrag(e){
-  if(dragIndex<0)return;
-  var idx=dragIndex;
-  var z=document.getElementById('dropZone').getBoundingClientRect();
-  var inside=e.clientX>=z.left&&e.clientX<=z.right&&e.clientY>=z.top&&e.clientY<=z.bottom;
-  document.getElementById('dropZone').classList.remove('over');
-  if(ghost&&ghost.parentNode)ghost.parentNode.removeChild(ghost);
-  ghost=null;dragIndex=-1;
-  if(inside)play(idx);
+
+function startTurnTimer(){
+  clearInterval(timerInterval);
+  if(!battleActive || isSettled || isMeditating)return;
+  timeLeft=TURN_SECONDS;
+  updateHUD();
+  updateWeaknessAlert();
+  timerInterval=setInterval(function(){
+    if(disposed || paused || !battleActive || isSettled || isMeditating)return;
+    timeLeft=Math.max(0,timeLeft-0.1);
+    updateHUD();
+    if(timeLeft<=0){
+      handleTurnTimeout();
+    }
+  },100);
 }
-row.addEventListener('pointerup',endDrag);row.addEventListener('pointercancel',endDrag);
-function resetArena(){
-  used=[false,false,false,false,false];renderCards();
-  var demon=document.getElementById('demon'),eyes=document.getElementById('demonEyes');
-  demon.style.opacity='';eyes.style.opacity='';
-  demon.style.setProperty('--fog','1');eyes.style.setProperty('--fog','1');
-  document.getElementById('demonBar').style.width='100%';
-  document.getElementById('stanceBar').style.width='100%';
-  document.getElementById('bowLine').classList.remove('show');
-  document.getElementById('strikeBanner').classList.remove('show');
-  document.getElementById('effectText').classList.remove('show');
-  document.getElementById('arenaStage').classList.remove('charge','shake');
+
+function handleTurnTimeout(){
+  clearInterval(timerInterval);
+  stanceLevel=Math.max(0,stanceLevel-20);
+  var eff=document.getElementById('effectText');
+  eff.textContent='线香燃尽·超时未操作，少林小子定力下降 20%！';
+  flash(eff,'show',1700);
+  flash(document.getElementById('arenaStage'),'shake',420);
+  playTone(146,0.22);
+  updateHUD();
+
+  if(stanceLevel<=0){
+    battleActive=false;
+    document.getElementById('warnBox').classList.add('hidden');
+    clearTimeout(settleTimeout);
+    settleTimeout=setTimeout(function(){
+      if(!disposed)openSettlement(false);
+    },5000);
+    return;
+  }
+
+  roundNum++;
+  weakIdx=(weakIdx+1)%WEAKNESS_POOL.length;
+  startTurnTimer();
+}
+
+function renderChainBriefSVG(){
+  var svg=document.getElementById('chainBriefSvg');
+  if(!svg)return;
+  var nodes=[
+    {x:36,y:34,label:'[1] 伏虎'},
+    {x:148,y:34,label:'[2] 劈山'},
+    {x:42,y:92,label:'[3] 一指'},
+    {x:148,y:92,label:'[4] 排山'},
+    {x:95,y:140,label:'[5] 坐禅收势'}
+  ];
+  var h='';
+  for(var b=0;b<nodes.length-1;b++){
+    h+='<line x1="'+nodes[b].x+'" y1="'+nodes[b].y+'" x2="'+nodes[b+1].x+'" y2="'+nodes[b+1].y+'" stroke="rgba(35,40,34,.22)" stroke-width="1.2" stroke-dasharray="3 3"/>';
+  }
+  for(var s=0;s<moveSequence.length-1;s++){
+    var from=nodes[moveSequence[s]], to=nodes[moveSequence[s+1]];
+    if(from&&to){
+      h+='<line x1="'+from.x+'" y1="'+from.y+'" x2="'+to.x+'" y2="'+to.y+'" stroke="#5D7A63" stroke-width="2.4"/>';
+    }
+  }
+  nodes.forEach(function(nd,idx){
+    var used=moveSequence.indexOf(idx)>=0;
+    var fill=used?(idx===4?'#B8923A':'#5D7A63'):'#F6F4EC';
+    var ink=used?'#FAF8F2':'#232822';
+    h+='<circle cx="'+nd.x+'" cy="'+nd.y+'" r="11" fill="'+fill+'" stroke="#232822" stroke-width="1.8"/>';
+    h+='<text x="'+nd.x+'" y="'+(nd.y+3.5)+'" text-anchor="middle" font-family="monospace" font-size="9.5" font-weight="700" fill="'+ink+'">'+(idx+1)+'</text>';
+    h+='<text x="'+nd.x+'" y="'+(nd.y+21)+'" text-anchor="middle" font-family="monospace" font-size="8.5" font-weight="700" fill="#232822">'+nd.label+'</text>';
+  });
+  svg.innerHTML=h;
+}
+
+function openSettlement(victory){
+  if(isSettled)return;
+  isSettled=true;
+  battleActive=false;
+  clearInterval(timerInterval);
+  document.getElementById('warnBox').classList.add('hidden');
+  document.getElementById('zenClimaxBanner').classList.remove('show');
+  document.getElementById('battleWorld').classList.add('blurred');
+
+  document.getElementById('resultRoundTitle').textContent='第 '+roundNum+' 回合 · 胜负已分';
+  document.getElementById('resultVerdict').textContent=victory
+    ?'内心不乱为定，外不著相为禅。你降伏了心魔。'
+    :'心魔未散，再练根基。';
+  document.getElementById('statMoves').textContent=moveSequence.length+' / 5';
+  document.getElementById('statStance').textContent=Math.max(0,Math.min(100,stanceLevel))+'%';
+  renderChainBriefSVG();
+  document.getElementById('resultModal').classList.add('open');
+  send('wudao:complete',{result:{completed:true,victory:!!victory,round:roundNum,moves:moveSequence.length,stance:stanceLevel}});
+}
+
+function flash(el,cls,delay){
+  el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);
+  setTimeout(function(){el.classList.remove(cls)},delay||900);
+}
+
+function triggerSkill(idx){
+  if(disposed || paused || !battleActive || isSettled || isMeditating)return;
+  var sk=FIVE_SKILLS[idx];if(!sk)return;
+
+  var keyBtns=document.querySelectorAll('#skillKeys .skill-key');
+  if(keyBtns[idx])flash(keyBtns[idx],'pressed',180);
+
+  if(idx===4){
+    if(!isShoushiUnlocked()){
+      var lockTip=document.getElementById('effectText');
+      lockTip.textContent='前四招使用后方可解锁「达摩坐禅·收势」！';
+      flash(lockTip,'show',1550);
+      return;
+    }
+    clearInterval(timerInterval);
+    isMeditating=true;
+    if(moveSequence.indexOf(4)<0)moveSequence.push(4);
+    updateHUD();
+    updateWeaknessAlert();
+
+    var stageEl=document.getElementById('arenaStage');
+    var f=document.getElementById('fighter');
+    renderFighter(MEDITATE_POSE);
+    f.classList.remove('idle','act','act-0','act-1','act-2','act-3');
+    void f.offsetWidth;
+    f.classList.add('meditate');
+
+    stageEl.classList.add('freeze');
+    playTone(396,0.5);
+
+    setTimeout(function(){
+      if(disposed)return;
+      stageEl.classList.remove('freeze');
+      document.getElementById('zenClimaxBanner').classList.add('show');
+      document.getElementById('demon').classList.add('wind-scatter');
+      spawnParticles('wind-light');
+      setTimeout(function(){if(!disposed)spawnParticles('wind-light')},950);
+    },750);
+
+    clearTimeout(settleTimeout);
+    settleTimeout=setTimeout(function(){
+      if(!disposed)openSettlement(true);
+    },5000);
+    return;
+  }
+
+  clearInterval(timerInterval);
+  if(moveSequence.indexOf(idx)<0)moveSequence.push(idx);
+  usedFirstFour[idx]=true;
+
+  var w=WEAKNESS_POOL[weakIdx % WEAKNESS_POOL.length];
+  var isCounter=(idx===w.counterIdx);
+  fogLevel=Math.max(0,fogLevel - sk.drop);
+  if(isCounter)stanceLevel=Math.min(100,stanceLevel+5);
+
+  playTone(isCounter?440:294,0.16);
+  updateHUD();
+  spawnParticles('burst');
+
   var f=document.getElementById('fighter');
-  f.classList.remove('bow','act','act-0','act-1','act-2','act-3','act-4');f.classList.add('idle');
-  renderFighter(STAND_POSE);
-  document.getElementById('strikeName').textContent=tr('strikeReady');
-  document.getElementById('strikeSub').textContent=tr('strikeReadySub');
+  renderFighter(ACTIONS[sk.actionIndex].pose);
+  f.classList.remove('idle','meditate','act','act-0','act-1','act-2','act-3');
+  void f.offsetWidth;
+  f.classList.add('act','act-'+idx);
+  setTimeout(function(){
+    if(disposed || isMeditating || isSettled)return;
+    f.classList.remove('act','act-0','act-1','act-2','act-3');
+    f.classList.add('idle');
+    renderFighter(HORSE_STANCE_POSE);
+  },660);
+
+  flash(document.getElementById('demon'),'hit',500);
+  flash(document.getElementById('arenaStage'),'shake',400);
+
+  var eff=document.getElementById('effectText');
+  eff.textContent=sk.effect + (isShoushiUnlocked()?' 「达摩坐禅·收势」已解锁！':'');
+  flash(eff,'show',1700);
+
+  if(fogLevel<=0){
+    battleActive=false;
+    document.getElementById('warnBox').classList.add('hidden');
+    clearTimeout(settleTimeout);
+    settleTimeout=setTimeout(function(){
+      if(!disposed)openSettlement(true);
+    },5000);
+    return;
+  }
+
+  roundNum++;
+  weakIdx=(weakIdx+1)%WEAKNESS_POOL.length;
+  startTurnTimer();
 }
-document.getElementById('resetBtn').onclick=resetArena;
-// 数字键 / 空格 / R 出招，仅在擂台页生效
+
+function resetArena(showIntro){
+  clearInterval(timerInterval);
+  clearTimeout(settleTimeout);
+  fogLevel=100;stanceLevel=80;usedFirstFour={};moveSequence=[];
+  roundNum=1;timeLeft=TURN_SECONDS;weakIdx=0;
+  isMeditating=false;isSettled=false;battleActive=!showIntro;
+
+  document.getElementById('demon').classList.remove('wind-scatter','hit');
+  document.getElementById('zenClimaxBanner').classList.remove('show');
+  document.getElementById('effectText').classList.remove('show');
+  document.getElementById('arenaStage').classList.remove('shake','freeze');
+  document.getElementById('battleWorld').classList.remove('blurred');
+  document.getElementById('resultModal').classList.remove('open');
+
+  var f=document.getElementById('fighter');
+  f.classList.remove('meditate','act','act-0','act-1','act-2','act-3');
+  f.classList.add('idle');
+  renderFighter(HORSE_STANCE_POSE);
+  updateHUD();
+
+  if(showIntro){
+    document.getElementById('warnBox').classList.add('hidden');
+    document.getElementById('introModal').classList.remove('hidden');
+  }else{
+    document.getElementById('introModal').classList.add('hidden');
+    startTurnTimer();
+  }
+}
+
+document.getElementById('startTrialBtn').onclick=function(){resetArena(false)};
+document.getElementById('rematchBtn').onclick=function(){resetArena(false)};
+
+document.querySelectorAll('#skillKeys .skill-key').forEach(function(btn){
+  btn.addEventListener('click',function(){triggerSkill(+btn.getAttribute('data-skill'))});
+});
+
+document.getElementById('soundToggleBtn').onclick=function(){
+  soundOn=!soundOn;
+  this.textContent=soundOn?'音效:开':'音效:关';
+  this.classList.toggle('active',soundOn);
+  if(soundOn)playTone(330,0.12);
+};
+
+var modal=document.getElementById('miniModal');
+document.getElementById('openCodexFromResultBtn').onclick=function(){modal.classList.add('open')};
+document.getElementById('closeModalBtn').onclick=function(){modal.classList.remove('open')};
+modal.addEventListener('click',function(e){if(e.target===modal)modal.classList.remove('open')});
+
 document.addEventListener('keydown',function(e){
   if(!document.getElementById('panel-arena').classList.contains('active'))return;
-  if(e.key>='1'&&e.key<='5'){play(+e.key-1);return}
-  if(e.key===' '){e.preventDefault();var n=nextIndex();if(n>=0)play(n);return}
-  if(e.key==='r'||e.key==='R'){resetArena()}
+  if(modal.classList.contains('open')){if(e.key==='Escape')modal.classList.remove('open');return}
+  if(!document.getElementById('introModal').classList.contains('hidden')){
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();resetArena(false)}
+    return;
+  }
+  var k=e.key.toLowerCase();
+  if(k==='a'){e.preventDefault();triggerSkill(0);return}
+  if(k==='s'){e.preventDefault();triggerSkill(1);return}
+  if(k==='d'){e.preventDefault();triggerSkill(2);return}
+  if(k==='f'){e.preventDefault();triggerSkill(3);return}
+  if(k==='g'){e.preventDefault();triggerSkill(4);return}
+  if(k==='r'){e.preventDefault();resetArena(false)}
 });
-// 点击土俵空白处 = 出下一式
-document.getElementById('arenaStage').addEventListener('click',function(e){
-  if(e.target.closest('.hud')||e.target.closest('.card'))return;
-  var n=nextIndex();if(n>=0)play(n);
-});
-document.getElementById('completeBtn').onclick=function(){if(!disposed)send('wudao:complete',{result:{completed:true,summary:en()?'Shaolin chapter viewed':'少林篇章已浏览'}})};
+
 document.getElementById('exitBtn').onclick=function(){if(parent!==window)send('wudao:exit');else go('narrative')};
 
 /* ---------- host bridge ---------- */
@@ -845,11 +1694,20 @@ function receive(event){
   if(d.type==='wudao:pause')paused=!!d.paused;
   if(d.type==='wudao:dispose')dispose();
 }
-function dispose(){disposed=true;window.removeEventListener('message',receive)}
+function dispose(){
+  disposed=true;
+  clearInterval(timerInterval);
+  clearInterval(gatherInterval);
+  clearTimeout(settleTimeout);
+  window.removeEventListener('message',receive);
+}
 window.addEventListener('message',receive);
 window.addEventListener('pagehide',dispose,{once:true});
 window.addEventListener('resize',function(){step=innerWidth*.55});
+
+gatherInterval=setInterval(function(){if(!disposed && !paused)spawnParticles('gather')},1100);
 paintText();
+resetArena(true);
 send('wudao:ready');
 })();
 </script>
