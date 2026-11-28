@@ -7,6 +7,8 @@ import { dispatchAudioIntent, mountainArenas, type CameraCommand, type Phase, ty
 import { KendoPreparation } from './mountain/KendoPreparation';
 import { kendoShots } from './mountain/kendoShots';
 import { SumoPreparation } from './mountain/SumoPreparation';
+import { BoxingPreparation } from './mountain/BoxingPreparation';
+import { boxingShots } from './mountain/boxingShots';
 import { sumoShots } from './mountain/sumoShots';
 import { WingbronePortal } from './mountain/WingbronePortal';
 
@@ -33,6 +35,7 @@ export default function MountainApp() {
   const [calm, setCalm] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
   const [kendoShot, setKendoShot] = useState(0), [kendoPaused, setKendoPaused] = useState(calm);
   const [sumoShot, setSumoShot] = useState(0), [sumoReadyShot, setSumoReadyShot] = useState(0), [sumoPaused, setSumoPaused] = useState(calm);
+  const [boxingShot, setBoxingShot] = useState(0), [boxingPaused, setBoxingPaused] = useState(calm);
   const restoreSumoFocus = useRef(false);
   const [sparring, setSparring] = useState(true), [sound, setSound] = useState(false), [help, setHelp] = useState(false);
   const [ready, setReady] = useState(false), [error, setError] = useState(''), [progress, setProgress] = useState(0);
@@ -45,6 +48,7 @@ export default function MountainApp() {
   const sumoPreparation = phase === 'details' && activeId === 'sumo';
   const sumoTransition = activeId === 'sumo' && phase === 'opening';
   const sumoSettled = sumoReadyShot === sumoShot || Boolean(error);
+  const boxingPreparation = phase === 'details' && activeId === 'boxing';
   const atEntrance = phase === 'welcome' || phase === 'arrival';
   const begin = () => { if (!ready || phase !== 'welcome') return; setPhase('arrival'); setProgress(0); setCommand(v => ({ kind: 'begin', sequence: v.sequence + 1 })); };
   const atStage = phase === 'arena' || phase === 'details', travelling = ['approach', 'returning', 'opening', 'closing'].includes(phase), hasError = Boolean(error);
@@ -59,13 +63,14 @@ export default function MountainApp() {
     if (!mountainArenas.some((a) => a.id === id)) return;
     if (id === 'kendo' && intentRef.current !== 'kendo') { setKendoShot(0); setKendoPaused(calm); }
     if (id === 'sumo') { setSumoShot(0); setSumoReadyShot(0); setSumoPaused(calm); restoreSumoFocus.current = false; }
+    if (id === 'boxing') { setBoxingShot(0); setBoxingPaused(calm); }
     intentRef.current = id; setActiveId(id); setHovered(null); setHelp(false); setProgress(0); setSparring(true);
     if (hasError) { setPhase('details'); return; }
     setPhase('approach'); setCommand((v) => ({ kind: 'enter', id, sequence: v.sequence + 1 }));
   }, [hasError, calm]);
   const arrive = useCallback((id: ArenaId) => {
     if (intentRef.current !== id) return;
-    setPhase(id === 'kendo' || id === 'sumo' ? 'details' : 'arena'); setProgress(1);
+    setPhase(id === 'kendo' || id === 'sumo' || id === 'boxing' ? 'details' : 'arena'); setProgress(1);
     setVisits((value) => {
       const next = value.includes(id) ? value : [...value, id];
       try { localStorage.setItem('wudao:mountain-visits:v1', JSON.stringify(next)); } catch { /* Storage is optional. */ }
@@ -121,6 +126,14 @@ export default function MountainApp() {
     const timer = window.setTimeout(() => setKendoShot(shot => shot + 1), duration);
     return () => window.clearTimeout(timer);
   }, [kendoPreparation, kendoPaused, kendoShot]);
+
+  useEffect(() => {
+    if (!boxingPreparation || boxingPaused || boxingShot >= boxingShots.length - 1) return;
+    const duration = boxingShots[boxingShot].duration;
+    if (!duration) return;
+    const timer = window.setTimeout(() => setBoxingShot(current => Math.min(boxingShots.length - 1, current + 1)), duration);
+    return () => window.clearTimeout(timer);
+  }, [boxingPreparation, boxingPaused, boxingShot]);
 
   const endSumoShot = useCallback((shot: number) => {
     setSumoShot(current => current === shot && current < sumoShots.length - 1 ? current + 1 : current);
@@ -187,7 +200,7 @@ export default function MountainApp() {
       <h1>{arena ? tx(arena.place, arena.placeEn) : tx('一山，六境。', 'One mountain.\nSix encounters.')}</h1>
       <p className="intro-secondary">{arena ? tx(arena.placeEn.toUpperCase(), arena.place) : tx('循着竹影，寻一场切磋。', 'Follow the bamboo. Find an encounter.')}</p>
       <p className="intro-copy">{arena ? tx(arena.invitation, arena.lineEn) : tx('在云与竹之间，自由入山。', 'Wander between the clouds and the grove.')}</p>
-      {phase === 'arena' && <button className="text-link" onClick={() => openChapter()}>{tx(arena?.id === 'kendo' ? '进入剑道 · 御风' : '进入篇章', arena?.id === 'kendo' ? 'Enter Kendo · Windborne' : 'Enter this chapter')}<span>↗</span></button>}
+      {phase === 'arena' && arena?.id !== 'boxing' && <button className="text-link" onClick={() => openChapter()}>{tx(arena?.id === 'kendo' ? '进入剑道 · 御风' : '进入篇章', arena?.id === 'kendo' ? 'Enter Kendo · Windborne' : 'Enter this chapter')}<span>↗</span></button>}
     </section>}
 
     {!atEntrance && !ready && !hasError && <div className="scene-loading" role="status"><span className="loading-mountain">∧</span><p>{tx('山形渐显…', 'The mountain is gathering…')}</p></div>}
@@ -204,16 +217,18 @@ export default function MountainApp() {
         {(['airy', 'balanced', 'full'] as Quality[]).map((value, index) => <button key={value} aria-pressed={quality === value} className={quality === value ? 'chosen' : ''} onClick={() => setQuality(value)}>{tx(['疏', '适中', '密'][index], ['Airy', 'Balanced', 'Full'][index])}</button>)}
       </fieldset><button className={`calm-button ${calm ? 'chosen' : ''}`} aria-pressed={calm} onClick={() => setCalm((v) => !v)}><i />{tx('静息模式', 'Stillness')}</button></div></>}
       {travelling && <div className="journey-status" role="status"><span>{phase === 'returning' ? tx('山海重现', 'BACK TO THE MOUNTAIN') : phase === 'opening' ? tx('散作风 · 聚成境', 'SCATTER · GATHER') : phase === 'closing' ? tx('竹影重聚', 'THE GROVE RETURNS') : (progress < .4 ? tx('风起 · 散出', 'SCATTER') : progress < .53 ? tx('换幕', 'CUT') : tx('聚成新境', 'GATHER'))}</span><i><b style={{ width: `${progress * 100}%` }} /></i></div>}
-      {phase === 'arena' && <div className="encounter-controls"><p>{tx('两人，先过两招。', 'Two figures. One encounter.')}</p><small>{tx('人物与动作示意 · 电影片段将在此呈现', 'Figures and motion study · a film scene will follow')}</small>
+      {phase === 'arena' && activeId !== 'boxing' && <div className="encounter-controls"><p>{tx('两人，先过两招。', 'Two figures. One encounter.')}</p><small>{tx('人物与动作示意 · 电影片段将在此呈现', 'Figures and motion study · a film scene will follow')}</small>
         <button onClick={toggleSparring} aria-pressed={!sparring}><span>{sparring ? 'Ⅱ' : '▷'}</span>{sparring ? tx('暂停切磋', 'Pause sparring') : tx('继续切磋', 'Resume sparring')}</button></div>}
       {phase === 'overview' && <div className="explore-cue"><span className="cue-orbit">↔</span><p>{hovered ? tx(`已寻到${mountainArenas.find((a) => a.id === hovered)?.cn} · 点击或滚轮靠近`, 'Scroll closer, or click to enter') : tx('点击空地入山', 'Choose a clearing')}</p></div>}
     </>}
 
+    {boxingPreparation && <BoxingPreparation language={language} shot={boxingShot} paused={boxingPaused}
+      onShot={setBoxingShot} onPause={() => setBoxingPaused(v => !v)} onPlay={() => openChapter('game')} onBack={() => returnToMountain()} />}
     {kendoPreparation && <KendoPreparation language={language} shot={kendoShot} paused={kendoPaused} fallback={hasError}
       onShot={setKendoShot} onPause={() => setKendoPaused(v => !v)} onPlay={() => openChapter('game')} onBack={() => returnToMountain()} />}
     {sumoPreparation && <SumoPreparation language={language} shot={sumoShot} settled={sumoSettled} paused={sumoPaused} fallback={hasError}
       onShot={setSumoShot} onPause={() => setSumoPaused(v => !v)} onPlay={() => openChapter('game')} onBack={() => returnToMountain()} />}
-    {phase === 'details' && arena && !kendoPreparation && !sumoPreparation && <section className="full-story" aria-labelledby="story-title">
+    {phase === 'details' && arena && !kendoPreparation && !sumoPreparation && !boxingPreparation && <section className="full-story" aria-labelledby="story-title">
       <button className="story-close" aria-label={tx('返回切磋', 'Back to the encounter')} onClick={closeChapter}>← <span>{tx('返回切磋', 'Back to the encounter')}</span></button>
       <div className="story-heading"><p className="overline">0{mountainArenas.indexOf(arena) + 1} / 06 · {tx('一处空地，一段相逢', 'A CLEARING, AN ENCOUNTER')}</p><h1 id="story-title">{tx(arena.cn, arena.en)}</h1>
         <span>{tx(arena.en.toUpperCase(), arena.cn)}</span><h2>{tx(arena.line, arena.lineEn)}</h2></div>
