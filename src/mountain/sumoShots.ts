@@ -1,4 +1,5 @@
-import type { MountainArena, Vec3 } from './model';
+import type { MountainArena } from './model';
+import { filmWorldPoint } from './filmWorldPoint';
 
 export const sumoShots = [
   { title: '土俵', en: 'The ring', caption: '沿屋形中轴缓缓靠近，土俵在檐下显露。', captionEn: 'Follow the pavilion’s axis as the ring comes into view beneath the eaves.', duration: 7500,
@@ -11,14 +12,11 @@ export const sumoShots = [
 
 export function sumoCameraPose(arena: MountainArena, shot: number, time = 0) {
   const frame = sumoShots[shot] ?? sumoShots[0];
-  const sin = Math.sin(arena.angle), cos = Math.cos(arena.angle);
-  const toWorld = ([x, y, z]: readonly [number, number, number]): Vec3 =>
-    [arena.x + x * cos + z * sin, arena.elevation + .2 + y, arena.z - x * sin + z * cos];
   // Leave a quiet beat at each end, then move forward on the same axis at a nearly fixed height.
   const t = shot === 0 ? Math.max(0, Math.min(1, (time - .7) / 5.95)) : 0;
   const glide = t * t * (3 - 2 * t);
-  const eye = toWorld([frame.eye[0], frame.eye[1] - .12 * glide, frame.eye[2] - 6.5 * glide]);
-  const target = toWorld([frame.target[0], frame.target[1] + .54 * glide, frame.target[2]]);
+  const eye = filmWorldPoint(arena, [frame.eye[0], frame.eye[1] - .12 * glide, frame.eye[2] - 6.5 * glide]);
+  const target = filmWorldPoint(arena, [frame.target[0], frame.target[1] + .54 * glide, frame.target[2]]);
   return { eye, target };
 }
 
