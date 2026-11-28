@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>咏春 · Wing Chun</title>
+<!--
+  ============================================================
+  这是「咏春」场地的接入页（iframe 模式）
+  对应仓库路径： public/experiences/wingchun/index.html
+  ------------------------------------------------------------
+  你（编程小白）只需要做 3 件事：
+   1. 把你做好的【视频】放进同一个文件夹，命名成  video.mp4
+   2. 把你的【PPT】用 PowerPoint「另存为 PDF」，放进同一个文件夹，命名成  slides.pdf
+   3. 让组长（或你自己）把  src/experiences/wingchun/index.ts 里的
+      entry 那一行改成：
+        entry: { kind: 'iframe', src: 'experiences/wingchun/index.html' },
+  最终同一个文件夹里应该有这三个文件：
+      index.html   video.mp4   slides.pdf
+  ============================================================
+-->
+<style>
+  :root{ --paper:#e9ecdf; --ink:#394c39; --wood:#986c50; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;}
+  .wrap{height:100%;display:flex;flex-direction:column;}
+  header{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 22px;border-bottom:2px solid rgba(57,76,57,.18);}
+  .brand{font-weight:700;letter-spacing:.06em;}
+  .brand small{font-weight:400;opacity:.7;margin-left:8px;}
+  .btns{display:flex;gap:10px;align-items:center;}
+  button{cursor:pointer;border:1px solid var(--ink);background:transparent;
+    color:var(--ink);padding:8px 16px;border-radius:999px;font-size:14px;}
+  button.active{background:var(--ink);color:var(--paper);}
+  .exit{border-color:var(--wood);color:var(--wood);}
+  .exit:hover{background:var(--wood);color:#fff;}
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:18px;}
+  .stage{width:min(1000px,100%);height:100%;display:none;background:#fff;
+    border:1px solid rgba(57,76,57,.2);border-radius:14px;overflow:hidden;}
+  .stage.show{display:block;}
+  video,.pdf{width:100%;height:100%;display:block;border:0;background:#000;}
+  .pdf{background:#fff;}
+  .tip{padding:10px 18px;font-size:13px;opacity:.75;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">咏春 <small data-i="sub">Wing Chun · 听竹坪</small></div>
+    <div class="btns">
+      <button id="tabVideo" class="active" data-i="video">视频</button>
+      <button id="tabPdf" data-i="pdf">演示文稿</button>
+      <button id="exitBtn" class="exit" data-i="exit">返回</button>
+    </div>
+  </header>
+  <main>
+      <section id="stageVideo" class="stage show">
+        <!-- 把你的视频命名为 video.mp4 放在本文件同目录 -->
+        <video id="vid" controls playsinline preload="metadata" src="video.mp4"></video>
+      </section>
+      <section id="stagePdf" class="stage">
+        <!-- 把 PPT 另存为 PDF 命名为 slides.pdf 放在本文件同目录 -->
+        <iframe class="pdf" src="slides.pdf#view=FitH" title="Wing Chun slides"></iframe>
+      </section>
+  </main>
+  <div class="tip" data-i="tip">提示：视频与演示文稿请直接使用下方按钮切换。</div>
+</div>
+
+<script>
+/* ===== 与主站通信（iframe 协议），小白可整段保留不动 ===== */
+var ARENA = 'wingchun';
+var VERSION = 1;
+var lang = 'zh';
+
+var I18N = {
+  zh:{sub:'Wing Chun · 听竹坪',video:'视频',pdf:'演示文稿',exit:'返回',tip:'提示：视频与演示文稿请直接使用下方按钮切换。'},
+  en:{sub:'Wing Chun · Listening Grove',video:'Video',pdf:'Slides',exit:'Back',tip:'Tip: switch between video and slides with the buttons above.'}
+};
+function applyLang(){
+  var d = I18N[lang]||I18N.zh;
+  document.querySelectorAll('[data-i]').forEach(function(el){
+    var k=el.getAttribute('data-i'); if(d[k]) el.textContent=d[k];
+  });
+}
+
+/* 切换视频 / 演示文稿 */
+var stageVideo=document.getElementById('stageVideo');
+var stagePdf=document.getElementById('stagePdf');
+var tabVideo=document.getElementById('tabVideo');
+var tabPdf=document.getElementById('tabPdf');
+var vid=document.getElementById('vid');
+function showVideo(){ stageVideo.classList.add('show'); stagePdf.classList.remove('show');
+  tabVideo.classList.add('active'); tabPdf.classList.remove('active'); }
+function showPdf(){ stagePdf.classList.add('show'); stageVideo.classList.remove('show');
+  tabPdf.classList.add('active'); tabVideo.classList.remove('active'); if(vid) vid.pause(); }
+tabVideo.onclick=showVideo; tabPdf.onclick=showPdf;
+
+/* 返回：请求退回上一级篇章 */
+document.getElementById('exitBtn').onclick=function(){ send('wudao:exit',{}); };
+
+var ORIGIN = (window.location.origin && window.location.origin !== 'null') ? window.location.origin : '*';
+function send(type,extra){
+  var msg=Object.assign({type:type,version:VERSION,arenaId:ARENA},extra||{});
+  try{ parent.postMessage(msg,ORIGIN); }catch(e){}
+}
+
+/* 接收主站消息 */
+window.addEventListener('message',function(ev){
+  if(ev.source !== window.parent) return;
+  if(ORIGIN !== '*' && ev.origin !== ORIGIN) return;
+  var d=ev.data; if(!d||d.version!==VERSION||d.arenaId!==ARENA) return;
+  if(d.type==='wudao:init'||d.type==='wudao:context'){
+    if(d.language){ lang=d.language; applyLang(); }
+    if(typeof d.paused === 'boolean' && d.paused && vid) vid.pause();
+  } else if(d.type==='wudao:pause'){
+    if(d.paused && vid) vid.pause();
+  } else if(d.type==='wudao:dispose'){
+    if(vid) vid.pause();
+  }
+});
+
+/* 页面被卸载时也释放资源（协议要求处理 pagehide） */
+window.addEventListener('pagehide',function(){ if(vid) vid.pause(); });
+
+/* 就绪：告诉主站本模块准备好了 */
+applyLang();
+send('wudao:ready',{});
+</script>
+</body>
+</html>
