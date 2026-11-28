@@ -52,7 +52,7 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
       expect(renderer.props!.command.id).toBe(a.id);
       expect(renderer.props!.arena?.id).toBe(a.id);
       act(() => renderer.props!.onArrive(a.id));
-      const hasFilm = a.id === 'kendo' || a.id === 'sumo';
+      const hasFilm = a.id === 'kendo' || a.id === 'sumo' || a.id === 'boxing';
       expect(container.querySelector('main')?.getAttribute('data-phase')).toBe(hasFilm ? 'details' : 'arena');
       expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(hasFilm ? a.cn : a.place);
     }
@@ -104,10 +104,8 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     const { container } = await open();
     fireEvent.click(nav().getByRole('button', { name: /拳击/ }));
     act(() => renderer.props!.onArrive('boxing'));
-    fireEvent.click(screen.getByRole('button', { name: /进入篇章/ }));
-    act(() => renderer.props!.onChapter());
-    fireEvent.click(screen.getByRole('button', { name: /进入体验/ }));
-    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByRole('heading', { name: '拳击' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /进入拳击/ }));
     act(() => renderer.props!.onChapter());
     expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('game');
     fireEvent.click(await screen.findByRole('button', { name: 'Exit boxing project' }));
@@ -123,7 +121,7 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('approach');
     expect(screen.getByLabelText('已寻访 0/6')).toBeTruthy();
     act(() => renderer.props!.onArrive('boxing'));
-    expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('arena');
+    expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('details');
     expect(screen.getByLabelText('已寻访 1/6')).toBeTruthy();
   });
   it('opens a full page, returns to the encounter, then zooms out to the mountain', async () => {
