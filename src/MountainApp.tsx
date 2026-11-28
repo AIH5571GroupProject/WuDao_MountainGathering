@@ -6,8 +6,8 @@ import { dispatchAudioIntent, mountainArenas, type CameraCommand, type Phase, ty
 
 import { KendoPreparation } from './mountain/KendoPreparation';
 import { kendoShots } from './mountain/kendoShots';
-import { SumoPreparation } from './mountain/SumoPreparation';
-import { sumoShots } from './mountain/sumoShots';
+import { TrainingPreparation } from './mountain/TrainingPreparation';
+import { isTrainingFilm, trainingFilms } from './mountain/trainingFilm';
 import { WingbronePortal } from './mountain/WingbronePortal';
 
 const MountainWorld = lazy(() => import('./mountain/MountainWorld'));
@@ -32,8 +32,8 @@ export default function MountainApp() {
   const [visits, setVisits] = useState<ArenaId[]>(readVisits), [quality, setQuality] = useState<Quality>('balanced');
   const [calm, setCalm] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
   const [kendoShot, setKendoShot] = useState(0), [kendoPaused, setKendoPaused] = useState(calm);
-  const [sumoShot, setSumoShot] = useState(0), [sumoReadyShot, setSumoReadyShot] = useState(0), [sumoPaused, setSumoPaused] = useState(calm);
-  const restoreSumoFocus = useRef(false);
+  const [filmShot, setFilmShot] = useState(0), [filmReadyShot, setFilmReadyShot] = useState(0), [filmPaused, setFilmPaused] = useState(calm);
+  const restoreFilmFocus = useRef(false);
   const [sparring, setSparring] = useState(true), [sound, setSound] = useState(false), [help, setHelp] = useState(false);
   const [ready, setReady] = useState(false), [error, setError] = useState(''), [progress, setProgress] = useState(0);
   const [command, setCommand] = useState<CameraCommand>({ kind: 'reset', sequence: 0 });
@@ -42,9 +42,10 @@ export default function MountainApp() {
   const experience = activeId && activeId !== 'kendo' ? arenaExperiences[activeId] : null;
   const pageIntent = useRef<'details' | 'game'>('details');
   const kendoPreparation = phase === 'details' && activeId === 'kendo';
-  const sumoPreparation = phase === 'details' && activeId === 'sumo';
-  const sumoTransition = activeId === 'sumo' && phase === 'opening';
-  const sumoSettled = sumoReadyShot === sumoShot || Boolean(error);
+  const filmId = isTrainingFilm(activeId) ? activeId : null;
+  const filmPreparation = phase === 'details' && filmId !== null;
+  const filmTransition = filmId !== null && phase === 'opening';
+  const filmSettled = filmReadyShot === filmShot || Boolean(error);
   const atEntrance = phase === 'welcome' || phase === 'arrival';
   const begin = () => { if (!ready || phase !== 'welcome') return; setPhase('arrival'); setProgress(0); setCommand(v => ({ kind: 'begin', sequence: v.sequence + 1 })); };
   const atStage = phase === 'arena' || phase === 'details', travelling = ['approach', 'returning', 'opening', 'closing'].includes(phase), hasError = Boolean(error);
@@ -58,14 +59,14 @@ export default function MountainApp() {
   const enter = useCallback((id: ArenaId) => {
     if (!mountainArenas.some((a) => a.id === id)) return;
     if (id === 'kendo' && intentRef.current !== 'kendo') { setKendoShot(0); setKendoPaused(calm); }
-    if (id === 'sumo') { setSumoShot(0); setSumoReadyShot(0); setSumoPaused(calm); restoreSumoFocus.current = false; }
+    if (isTrainingFilm(id)) { setFilmShot(0); setFilmReadyShot(0); setFilmPaused(calm); restoreFilmFocus.current = false; }
     intentRef.current = id; setActiveId(id); setHovered(null); setHelp(false); setProgress(0); setSparring(true);
     if (hasError) { setPhase('details'); return; }
     setPhase('approach'); setCommand((v) => ({ kind: 'enter', id, sequence: v.sequence + 1 }));
   }, [hasError, calm]);
   const arrive = useCallback((id: ArenaId) => {
     if (intentRef.current !== id) return;
-    setPhase(id === 'kendo' || id === 'sumo' ? 'details' : 'arena'); setProgress(1);
+    setPhase(id === 'kendo' || isTrainingFilm(id) ? 'details' : 'arena'); setProgress(1);
     setVisits((value) => {
       const next = value.includes(id) ? value : [...value, id];
       try { localStorage.setItem('wudao:mountain-visits:v1', JSON.stringify(next)); } catch { /* Storage is optional. */ }
@@ -91,7 +92,7 @@ export default function MountainApp() {
     setPhase('closing'); setProgress(0); setCommand(v => ({ kind: 'encounter', sequence: v.sequence + 1 }));
   }, [hasError]);
   const closeGame = useCallback(() => {
-    if (intentRef.current === 'sumo') restoreSumoFocus.current = true;
+    if (isTrainingFilm(intentRef.current)) restoreFilmFocus.current = true;
     openChapter('details');
   }, [openChapter]);
   const overview = useCallback(() => { setPhase('overview'); setActiveId(null); setProgress(0); }, []);
@@ -106,14 +107,14 @@ export default function MountainApp() {
       if (event.key === 'Escape') {
         if (help) setHelp(false);
         else if (phase === 'game') closeGame();
-        else if (kendoPreparation || sumoPreparation) returnToMountain();
+        else if (kendoPreparation || filmPreparation) returnToMountain();
         else if (phase === 'details') closeChapter();
         else if (ready) returnToMountain();
       }
       if (!event.altKey && !event.ctrlKey && !event.metaKey && phase !== 'game' && /^[1-6]$/.test(event.key) && (ready || hasError)) enter(mountainArenas[Number(event.key) - 1].id);
     };
     window.addEventListener('keydown', key); return () => window.removeEventListener('keydown', key);
-  }, [ready, hasError, help, phase, kendoPreparation, sumoPreparation, enter, returnToMountain, closeChapter, closeGame]);
+  }, [ready, hasError, help, phase, kendoPreparation, filmPreparation, enter, returnToMountain, closeChapter, closeGame]);
 
   useEffect(() => {
     const duration = kendoShots[kendoShot].duration;
@@ -122,23 +123,23 @@ export default function MountainApp() {
     return () => window.clearTimeout(timer);
   }, [kendoPreparation, kendoPaused, kendoShot]);
 
-  const endSumoShot = useCallback((shot: number) => {
-    setSumoShot(current => current === shot && current < sumoShots.length - 1 ? current + 1 : current);
+  const endFilmShot = useCallback((shot: number) => {
+    setFilmShot(current => current === shot && current < 2 ? current + 1 : current);
   }, []);
 
   useEffect(() => {
-    const duration = sumoShots[sumoShot].duration;
-    if (!sumoPreparation || !hasError || sumoPaused || !duration) return;
-    const timer = window.setTimeout(() => endSumoShot(sumoShot), duration);
+    const duration = filmId ? trainingFilms[filmId].shots[filmShot].duration : 0;
+    if (!filmPreparation || !hasError || filmPaused || !duration) return;
+    const timer = window.setTimeout(() => endFilmShot(filmShot), duration);
     return () => window.clearTimeout(timer);
-  }, [endSumoShot, hasError, sumoPreparation, sumoPaused, sumoShot]);
+  }, [endFilmShot, hasError, filmId, filmPreparation, filmPaused, filmShot]);
 
   useEffect(() => {
-    if (sumoPreparation && sumoSettled && restoreSumoFocus.current) {
-      document.getElementById('sumo-enter')?.focus();
-      restoreSumoFocus.current = false;
+    if (filmPreparation && filmSettled && restoreFilmFocus.current) {
+      document.getElementById(`${filmId}-enter`)?.focus();
+      restoreFilmFocus.current = false;
     }
-  }, [sumoPreparation, sumoSettled]);
+  }, [filmId, filmPreparation, filmSettled]);
 
   const helpRows = [
     tx('拖动：山外环看；场内小幅换角度。', 'Drag to orbit the mountain, or gently change your angle inside a clearing.'),
@@ -149,10 +150,10 @@ export default function MountainApp() {
   ];
 
 
-  return <main className={`mountain-experience phase-${phase} ${atStage ? 'is-close' : ''} ${kendoPreparation ? 'is-kendo-film' : ''} ${sumoPreparation || sumoTransition ? 'is-sumo-film' : ''}`} data-phase={phase}>
+  return <main className={`mountain-experience phase-${phase} ${atStage ? 'is-close' : ''} ${kendoPreparation ? 'is-kendo-film' : ''} ${filmPreparation || filmTransition ? `is-${filmId}-film` : ''}`} data-phase={phase}>
     <SceneBoundary onError={onError}><Suspense fallback={null}>
       <MountainWorld command={command} phase={phase} arena={arena} language={language} quality={quality} calm={calm} sparring={sparring} kendoShot={kendoShot} kendoPaused={kendoPaused}
-        sumoShot={sumoShot} sumoPaused={sumoPaused} onSumoShotReady={setSumoReadyShot} onSumoShotEnd={endSumoShot}
+        filmShot={filmShot} filmPaused={filmPaused} onFilmShotReady={setFilmReadyShot} onFilmShotEnd={endFilmShot}
         onEnter={enter} onHover={onHover} onArrive={arrive} onOverview={overview} onProgress={setProgress} onPullBack={pullBack}
         onChapter={chapterReady} onEncounter={encounterReady} onReady={onReady} onError={onError} onToggleSparring={toggleSparring} />
     </Suspense></SceneBoundary>
@@ -182,7 +183,7 @@ export default function MountainApp() {
       </div>
     </header>
 
-    {!atEntrance && !sumoTransition && !['details', 'game'].includes(phase) && <section className={`scene-intro ${travelling ? 'travelling' : ''}`} aria-live="polite" lang={language === 'zh' ? 'zh-CN' : 'en'}>
+    {!atEntrance && !filmTransition && !['details', 'game'].includes(phase) && <section className={`scene-intro ${travelling ? 'travelling' : ''}`} aria-live="polite" lang={language === 'zh' ? 'zh-CN' : 'en'}>
       <p className="overline">{arena ? `0${mountainArenas.indexOf(arena) + 1} / 06 · ${arena.en.toUpperCase()}` : 'THE MOUNTAIN / 山海总图'}</p>
       <h1>{arena ? tx(arena.place, arena.placeEn) : tx('一山，六境。', 'One mountain.\nSix encounters.')}</h1>
       <p className="intro-secondary">{arena ? tx(arena.placeEn.toUpperCase(), arena.place) : tx('循着竹影，寻一场切磋。', 'Follow the bamboo. Find an encounter.')}</p>
@@ -195,7 +196,7 @@ export default function MountainApp() {
       <p>{tx('场景未能加载。请重新载入页面，或双击项目中的 start-preview.cmd 启动本地预览。', 'The scene could not load. Reload the page, or start the local preview using start-preview.cmd.')}</p><pre tabIndex={0} aria-label={tx('错误详细信息', 'Error details')}>{error}</pre><button className="chapter-enter" onClick={() => window.location.reload()}>{tx('重新载入场景', 'Reload the scene')}</button></div>}
 
     {!atEntrance && !['details', 'game'].includes(phase) && <>
-      {!sumoTransition && <><div className="camera-tools" aria-label={tx('视角控制', 'Camera controls')}>
+      {!filmTransition && <><div className="camera-tools" aria-label={tx('视角控制', 'Camera controls')}>
         <button aria-label={tx('靠近', 'Move closer')} title={tx('靠近', 'Move closer')} onClick={() => zoom(1)} disabled={!ready || travelling}>+</button><i />
         <button aria-label={tx('拉远', 'Pull back')} title={tx('拉远', 'Pull back')} onClick={() => zoom(-1)} disabled={!ready || travelling}>−</button>
         <button className="home-tool" aria-label={tx('回到全景', 'Reset overview')} title={tx('回到全景', 'Reset overview')} onClick={() => returnToMountain(true)} disabled={!ready || travelling}>⌂</button>
@@ -211,9 +212,10 @@ export default function MountainApp() {
 
     {kendoPreparation && <KendoPreparation language={language} shot={kendoShot} paused={kendoPaused} fallback={hasError}
       onShot={setKendoShot} onPause={() => setKendoPaused(v => !v)} onPlay={() => openChapter('game')} onBack={() => returnToMountain()} />}
-    {sumoPreparation && <SumoPreparation language={language} shot={sumoShot} settled={sumoSettled} paused={sumoPaused} fallback={hasError}
-      onShot={setSumoShot} onPause={() => setSumoPaused(v => !v)} onPlay={() => openChapter('game')} onBack={() => returnToMountain()} />}
-    {phase === 'details' && arena && !kendoPreparation && !sumoPreparation && <section className="full-story" aria-labelledby="story-title">
+    {filmId && filmPreparation && <TrainingPreparation arenaId={filmId} gameAvailable={Boolean(experience?.entry)} language={language} shot={filmShot}
+      settled={filmSettled} paused={filmPaused} fallback={hasError} onShot={setFilmShot} onPause={() => setFilmPaused(v => !v)}
+      onPlay={() => openChapter('game')} onBack={() => returnToMountain()} />}
+    {phase === 'details' && arena && !kendoPreparation && !filmPreparation && <section className="full-story" aria-labelledby="story-title">
       <button className="story-close" aria-label={tx('返回切磋', 'Back to the encounter')} onClick={closeChapter}>← <span>{tx('返回切磋', 'Back to the encounter')}</span></button>
       <div className="story-heading"><p className="overline">0{mountainArenas.indexOf(arena) + 1} / 06 · {tx('一处空地，一段相逢', 'A CLEARING, AN ENCOUNTER')}</p><h1 id="story-title">{tx(arena.cn, arena.en)}</h1>
         <span>{tx(arena.en.toUpperCase(), arena.cn)}</span><h2>{tx(arena.line, arena.lineEn)}</h2></div>
@@ -229,7 +231,7 @@ export default function MountainApp() {
     </section>}
 
     {phase === 'game' && activeId === 'kendo' && <WingbronePortal language={language} onClose={closeGame} />}
-    {phase === 'game' && experience?.entry && <ExperiencePortal key={experience.id} definition={experience}
+    {phase === 'game' && experience && (experience.entry || experience.id === 'boxing') && <ExperiencePortal key={experience.id} definition={experience}
       context={{ version: 1, arenaId: experience.id, language, soundEnabled: sound, reducedMotion: calm, quality, assets: experience.assets }} onClose={closeGame} />}
     {help && <aside className="exploration-help" aria-label={tx('操作说明', 'How to explore')}><div><strong>{tx('操作说明', 'How to explore')}</strong><button onClick={() => setHelp(false)} aria-label="Close help">×</button></div><ol>{helpRows.map((row) => <li key={row}>{row}</li>)}</ol></aside>}
     {!atEntrance && <footer className={`mountain-footer ${phase === 'details' ? 'in-story' : ''}`}>

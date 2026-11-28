@@ -52,7 +52,7 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
       expect(renderer.props!.command.id).toBe(a.id);
       expect(renderer.props!.arena?.id).toBe(a.id);
       act(() => renderer.props!.onArrive(a.id));
-      const hasFilm = a.id === 'kendo' || a.id === 'sumo';
+      const hasFilm = a.id === 'kendo' || a.id === 'sumo' || a.id === 'boxing';
       expect(container.querySelector('main')?.getAttribute('data-phase')).toBe(hasFilm ? 'details' : 'arena');
       expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(hasFilm ? a.cn : a.place);
     }
@@ -67,10 +67,10 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     expect(screen.getByRole('heading', { name: '土俵' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: '进入相扑' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '撒盐' }));
-    act(() => renderer.props!.onSumoShotReady(1));
+    act(() => renderer.props!.onFilmShotReady(1));
     fireEvent.click(screen.getByRole('button', { name: '仕切' }));
     expect((screen.getByRole('button', { name: '进入相扑' }) as HTMLButtonElement).disabled).toBe(true);
-    act(() => renderer.props!.onSumoShotReady(2));
+    act(() => renderer.props!.onFilmShotReady(2));
     fireEvent.click(screen.getByRole('button', { name: '进入相扑' }));
     expect(screen.queryByRole('dialog')).toBeNull();
     act(() => renderer.props!.onChapter());
@@ -78,6 +78,26 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     act(() => renderer.props!.onChapter());
     expect(screen.getByRole('heading', { name: '仕切' })).toBeTruthy();
     expect(document.activeElement).toBe(screen.getByRole('button', { name: '进入相扑' }));
+  });
+  it('walks through the boxing shots and lets an unavailable game return to strength', async () => {
+    await open();
+    fireEvent.keyDown(window, { key: '4' });
+    act(() => renderer.props!.onArrive('boxing'));
+    expect(screen.getByRole('heading', { name: '空击' })).toBeTruthy();
+    act(() => renderer.props!.onFilmShotEnd(0));
+    expect(screen.getByRole('heading', { name: '找拍' })).toBeTruthy();
+    act(() => renderer.props!.onFilmShotReady(1));
+    act(() => renderer.props!.onFilmShotEnd(1));
+    const enter = screen.getByRole('button', { name: '进入拳击' }) as HTMLButtonElement;
+    expect(enter.disabled).toBe(true);
+    act(() => renderer.props!.onFilmShotReady(2));
+    fireEvent.click(enter);
+    act(() => renderer.props!.onChapter());
+    expect(screen.getByRole('heading', { name: '拳击体验筹备中' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '退出拳击' }));
+    act(() => renderer.props!.onChapter());
+    expect(screen.getByRole('heading', { name: '蓄势' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: '进入拳击' }));
   });
   it('opens the separate Kendo game only after the particle transition and removes it on exit', async () => {
     const { container } = await open();
@@ -99,14 +119,14 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     act(() => renderer.props!.onChapter());
     expect(screen.getByRole('region', { name: '剑道' })).toBeTruthy();
   });
-  it('mounts a configured 01–05 module only after the chapter transition and returns to its own chapter', async () => {
+  it('launches a configured boxing game through the same entry and returns to strength', async () => {
     arenaExperiences.boxing.entry = { kind: 'react', load: async () => ({ default: ({ onExit }) => <button onClick={onExit}>Exit boxing project</button> }) };
     const { container } = await open();
     fireEvent.click(nav().getByRole('button', { name: /拳击/ }));
     act(() => renderer.props!.onArrive('boxing'));
-    fireEvent.click(screen.getByRole('button', { name: /进入篇章/ }));
-    act(() => renderer.props!.onChapter());
-    fireEvent.click(screen.getByRole('button', { name: /进入体验/ }));
+    fireEvent.click(screen.getByRole('button', { name: /跳到蓄势/ }));
+    act(() => renderer.props!.onFilmShotReady(2));
+    fireEvent.click(screen.getByRole('button', { name: '进入拳击' }));
     expect(screen.queryByRole('dialog')).toBeNull();
     act(() => renderer.props!.onChapter());
     expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('game');
@@ -114,6 +134,7 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
     act(() => renderer.props!.onChapter());
     expect(screen.getByRole('region', { name: '拳击' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: '蓄势' })).toBeTruthy();
   });
   it('ignores a stale arrival when a newer clearing has been requested', async () => {
     const { container } = await open();
@@ -123,7 +144,7 @@ describe('mountain journey UI (renderer boundary mocked)', () => {
     expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('approach');
     expect(screen.getByLabelText('已寻访 0/6')).toBeTruthy();
     act(() => renderer.props!.onArrive('boxing'));
-    expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('arena');
+    expect(container.querySelector('main')?.getAttribute('data-phase')).toBe('details');
     expect(screen.getByLabelText('已寻访 1/6')).toBeTruthy();
   });
   it('opens a full page, returns to the encounter, then zooms out to the mountain', async () => {

@@ -5,6 +5,7 @@ const experience: ArenaExperience = {
   assets: { sceneUrl: null, actorUrl: null, filmUrl: null, ambientAudio: null, stageAudio: null },
   // React: { kind: 'react', load: () => import('./Experience') }
   // Standalone: { kind: 'iframe', src: 'experiences/boxing/index.html' }
+  // Leave null until the game is merged. The mountain portal renders the reserved page automatically.
   entry: null,
 };
 export default experience;

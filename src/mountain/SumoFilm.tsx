@@ -5,7 +5,7 @@ import { screenDispersal } from './materials';
 import { smoothstep } from './model';
 import { makeDohyo, makeDohyoRim, makeDohyoRoof, makeRikishi, makeRingSurroundings, makeSalt } from './sumoGeometry';
 
-type SumoVisual = { activeStage: string | null; visibility: number; scatter: number; sumoFrame: number; sumoTime: number };
+type SumoVisual = { activeStage: string | null; visibility: number; scatter: number; filmFrame: number; filmTime: number };
 
 const vertex = /* glsl */ `
 attribute vec2 aStyle;
@@ -112,17 +112,17 @@ export function SumoFilm({ visual, calm }: { visual: MutableRefObject<SumoVisual
     if (!scene.current) return;
     scene.current.visible = v.activeStage === 'sumo' && v.visibility > .001;
     if (!scene.current.visible) return;
-    pavilion.current!.visible = v.sumoFrame === 0;
-    standing.current!.visible = v.sumoFrame === 1;
-    ready.current!.visible = v.sumoFrame === 2;
+    pavilion.current!.visible = v.filmFrame === 0;
+    standing.current!.visible = v.filmFrame === 1;
+    ready.current!.visible = v.filmFrame === 2;
     for (const material of [ink, figures, rim, ...salts]) {
       material.uniforms.uVisibility.value = v.visibility;
       material.uniforms.uScatter.value = v.scatter;
       material.uniforms.uDpr.value = gl.getPixelRatio();
     }
-    figures.uniforms.uTime.value = rim.uniforms.uTime.value = v.sumoFrame === 2 && !calm ? v.sumoTime : 0;
+    figures.uniforms.uTime.value = rim.uniforms.uTime.value = v.filmFrame === 2 && !calm ? v.filmTime : 0;
     [rightArmA, rightArmB].forEach((arm, i) => {
-      const moment = v.sumoTime - (1.78 + i * 1.25);
+      const moment = v.filmTime - (1.78 + i * 1.25);
       const swing = smoothstep(-.6, .03, moment) * (1 - smoothstep(.19, .77, moment));
       if (arm.current) arm.current.rotation.set(-1.88 * swing, -.26 * swing, .13 * swing);
       salts[i].uniforms.uTime.value = moment;

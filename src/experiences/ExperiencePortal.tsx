@@ -44,17 +44,28 @@ export function ExperiencePortal({ definition, context, onClose }: { definition:
   }, [context, status, url]);
   const props: ExperienceProps = { ...context, paused, onExit: onClose, onComplete: complete };
   const isSumo = definition.id === 'sumo';
-  return <section className={isSumo ? 'game-portal sumo-game-portal' : 'game-portal'} role="dialog" aria-modal="true" aria-label={definition.title[context.language]}>
-    <div className="game-toolbar"><button className={isSumo ? 'journey-button' : undefined} ref={close} onClick={onClose}>← {isSumo ? tx('退出相扑', 'Exit Sumo') : tx('退出体验 · 返回篇章', 'Leave experience · Back to chapter')}</button>
+  const isBoxing = definition.id === 'boxing';
+  const isTraining = isSumo || isBoxing;
+  const exitLabel = isSumo ? tx('退出相扑', 'Exit Sumo') : isBoxing ? tx('退出拳击', 'Exit Boxing') : tx('退出体验 · 返回篇章', 'Leave experience · Back to chapter');
+  return <section className={isTraining ? 'game-portal training-game-portal' : 'game-portal'} role="dialog" aria-modal="true" aria-label={definition.title[context.language]}>
+    <div className="game-toolbar"><button className={isTraining ? 'journey-button' : undefined} ref={close} onClick={onClose}><span className="game-back-arrow" aria-hidden="true">←</span> {exitLabel}</button>
       <span className="game-toolbar-title">{definition.number} / {definition.title[context.language]}</span>
       {url && <a href={url} target="_blank" rel="noopener noreferrer">{tx('独立窗口', 'Open separately')} ↗</a>}
     </div>
+    {isBoxing && !entry && <div className="boxing-reserved">
+      <div className="boxing-reserved-card">
+        <p className="overline">{tx('拳击 · 回声谷', 'BOXING · ECHO VALLEY')}</p>
+        <h2>{tx('拳击体验筹备中', 'Boxing experience in development')}</h2>
+        <p>{tx('游戏上线后，将从这里进入。', 'The game will open here when it is available.')}</p>
+        <button className="journey-button" type="button" onClick={onClose}><span aria-hidden="true">←</span>{tx('返回蓄势镜头', 'Back to strength')}</button>
+      </div>
+    </div>}
     {url && <iframe key={attempt} ref={iframe} src={url} title={definition.title[context.language] + ' experience'}
       allow={entry?.kind === 'iframe' && entry.camera ? 'camera; fullscreen' : 'fullscreen'} referrerPolicy="strict-origin-when-cross-origin" onError={() => setStatus('error')} />}
     {Module && <div className="experience-module"><ModuleBoundary key={attempt} onError={() => setStatus('error')}><Suspense fallback={<p role="status">{tx('新境正在聚拢…', 'The scene is gathering…')}</p>}><Module {...props} /></Suspense></ModuleBoundary></div>}
     {((url && status !== 'ready') || status === 'error') && <div className="game-loading" role="status"><p>{status === 'error' ? tx('体验暂未就绪，可以重试或返回篇章。', 'The experience is not ready. Retry or return to the chapter.') : tx('新境正在聚拢…', 'The scene is gathering…')}</p>
       {status === 'error' && <button onClick={() => { setStatus('loading'); setAttempt(a => a + 1); }}>{tx('重新载入', 'Try again')}</button>}
     </div>}
-    <div className="game-footnote">{isSumo ? tx('退出将返回仕切镜头', 'Exiting returns to the ready position') : tx('左上角退出并返回 · 离开时结束当前体验', 'Use the top-left button to return · Leaving ends the current experience')}</div>
+    <div className="game-footnote">{isSumo ? tx('退出将返回仕切镜头', 'Exiting returns to the ready position') : isBoxing ? tx('按 Esc 或点击退出，返回拳击准备页', 'Press Esc or use Exit to return to boxing') : tx('左上角退出并返回 · 离开时结束当前体验', 'Use the top-left button to return · Leaving ends the current experience')}</div>
   </section>;
 }
